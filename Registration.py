@@ -16,8 +16,9 @@ pygame.init()
 # Définition des couleurs Discord
 BACKGROUND_COLOR = (54, 57, 63)
 TEXT_COLOR = (255, 255, 255)
-INPUT_BOX_COLOR = (64, 68, 75)
-INPUT_TEXT_COLOR = (188, 190, 196)
+INPUT_BOX_COLOR = (44, 47, 51)  # Couleur de fond des champs de texte
+INPUT_BOX_BORDER_COLOR = (35, 39, 42)  # Couleur de la bordure des champs de texte
+INPUT_TEXT_COLOR = (255, 255, 255)
 BUTTON_COLOR = (114, 137, 218)
 BUTTON_HOVER_COLOR = (103, 123, 196)
 
@@ -27,8 +28,12 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Connexion et Inscription")
 
 # Police de caractères
-font = pygame.font.Font("font/Roboto-Regular.ttf", 20)
-input_font = pygame.font.Font("font/Roboto-Regular.ttf", 16)
+font = pygame.font.Font(None, 24)
+input_font = pygame.font.Font(None, 20)
+
+# Chargement d'images Discord
+discord_logo = pygame.image.load('Data/Logo Discord.png')
+discord_logo = pygame.transform.scale(discord_logo, (150, 150))
 
 # Fonction pour afficher du texte sur l'écran
 def draw_text(text, font, color, surface, x, y):
@@ -41,8 +46,8 @@ def draw_text(text, font, color, surface, x, y):
 def draw_input_box(surface, x, y, width, height, text, font, text_input):
     input_box = pygame.Rect(x, y, width, height)
     pygame.draw.rect(surface, INPUT_BOX_COLOR, input_box)
-    pygame.draw.rect(surface, TEXT_COLOR, input_box, 2)
-    draw_text(text, font, TEXT_COLOR, surface, x + 5, y - 20)
+    pygame.draw.rect(surface, INPUT_BOX_BORDER_COLOR, input_box, 2)  # Bordure plus sombre
+    draw_text(text, font, TEXT_COLOR, surface, x - 140, y + 7)  # Positionner le texte légèrement plus haut
     text_surface = font.render(text_input, True, INPUT_TEXT_COLOR)
     surface.blit(text_surface, (x + 5, y + 5))
     return input_box
@@ -51,7 +56,7 @@ def draw_input_box(surface, x, y, width, height, text, font, text_input):
 def draw_button(surface, x, y, width, height, text, font, color, hover_color):
     button_rect = pygame.Rect(x, y, width, height)
     pygame.draw.rect(surface, color, button_rect)
-    pygame.draw.rect(surface, TEXT_COLOR, button_rect, 2)
+    pygame.draw.rect(surface, INPUT_BOX_BORDER_COLOR, button_rect, 2)  # Utilisation de la même couleur de bordure que les champs de texte
     text_surface = font.render(text, True, TEXT_COLOR)
     text_rect = text_surface.get_rect(center=button_rect.center)
     surface.blit(text_surface, text_rect)
@@ -68,7 +73,7 @@ def check_login(email, password):
 
 # Fonction pour insérer un nouvel utilisateur dans la base de données
 def insert_user(name, first_name, email, password):
-    query = "INSERT INTO users (nom, prenom, email, password) VALUES (%s, %s, %s, %s)"  # Modifier le nom des colonnes si nécessaire
+    query = "INSERT INTO users (nom, prenom, email, password) VALUES (%s, %s, %s, %s)"
     cursor.execute(query, (name, first_name, email, password))
     db.commit()
 
@@ -87,6 +92,7 @@ def main():
 
     while running:
         screen.fill(BACKGROUND_COLOR)
+        screen.blit(discord_logo, (325, 50))  # Ajustement de la position du logo
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -114,18 +120,18 @@ def main():
         # Affichage des champs de texte pour la connexion ou l'inscription
         if not logged_in:
             # Affichage des champs pour le nom, le prénom, l'email et le mot de passe
-            name_input_box = draw_input_box(screen, 300, 200, 200, 30, "Nom:", input_font, name_input)
-            first_name_input_box = draw_input_box(screen, 300, 250, 200, 30, "Prénom:", input_font, first_name_input)
-            email_input_box = draw_input_box(screen, 300, 300, 200, 30, "Email:", input_font, email_input)
-            password_input_box = draw_input_box(screen, 300, 350, 200, 30, "Mot de passe:", input_font, password_input)
+            name_input_box = draw_input_box(screen, 350, 250, 300, 40, "Nom:", input_font, name_input)
+            first_name_input_box = draw_input_box(screen, 350, 310, 300, 40, "Prénom:", input_font, first_name_input)
+            email_input_box = draw_input_box(screen, 350, 370, 300, 40, "Email:", input_font, email_input)
+            password_input_box = draw_input_box(screen, 350, 430, 300, 40, "Mot de passe:", input_font, password_input)
 
             # Affichage du bouton pour l'inscription
-            draw_button(screen, 330, 400, 150, 50, "Inscription", font, BUTTON_COLOR, BUTTON_HOVER_COLOR)
+            draw_button(screen, 300, 500, 200, 50, "S'inscrire", font, BUTTON_COLOR, BUTTON_HOVER_COLOR)
 
             # Gestion des interactions avec le bouton d'inscription
             mouse_pos = pygame.mouse.get_pos()
             if pygame.mouse.get_pressed()[0]:
-                if 330 < mouse_pos[0] < 480 and 400 < mouse_pos[1] < 450:
+                if 300 < mouse_pos[0] < 500 and 500 < mouse_pos[1] < 550:
                     # Insertion des informations dans la base de données
                     insert_user(name_input, first_name_input, email_input, password_input)
                     logged_in = True
