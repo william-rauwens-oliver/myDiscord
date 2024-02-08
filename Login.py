@@ -24,3 +24,9 @@ BUTTON_HOVER_COLOR = (103, 123, 196)
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Connexion et Inscription")
+
+font = pygame.font.Font(None, 24)
+input_font = pygame.font.Font(None, 20)
+
+discord_logo = pygame.image.load('Data/Logo Discord.png')
+discord_logo = pygame.transform.scale(discord_logo, (150, 150))
