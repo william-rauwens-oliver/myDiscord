@@ -63,3 +63,9 @@ def draw_button(surface, x, y, width, height, text, font, color, hover_color):
     mouse_pos = pygame.mouse.get_pos()
     if button_rect.collidepoint(mouse_pos):
         pygame.draw.rect(surface, hover_color, button_rect, 2)
+
+def check_login(email, password):
+    query = "SELECT * FROM users WHERE email = %s AND password = %s"
+    cursor.execute(query, (email, password))
+    result = cursor.fetchone()
+    return result is not None
