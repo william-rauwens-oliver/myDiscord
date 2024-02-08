@@ -10,4 +10,3 @@ class Message:
 
     def text():
         pass
-
