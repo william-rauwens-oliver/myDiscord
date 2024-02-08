@@ -97,3 +97,33 @@ def main():
                         email_input += event.unicode
                     elif len(password_input) < 20 and password_input_box.collidepoint(pygame.mouse.get_pos()):
                         password_input += event.unicode
+
+        if not logged_in:
+            email_input_box = draw_input_box(screen, 400, 300, 300, 40, "Email", input_font, email_input)
+            password_input_box = draw_input_box(screen, 400, 370, 300, 40, "Mot de passe", input_font, password_input)
+
+            draw_button(screen, 400, 450, 200, 50, "Se connecter", font, BUTTON_COLOR, BUTTON_HOVER_COLOR)
+            mouse_pos = pygame.mouse.get_pos()
+            if pygame.mouse.get_pressed()[0]:
+                if 350 < mouse_pos[0] < 550 and 450 < mouse_pos[1] < 500:
+                    if check_login(email_input, password_input):
+                        logged_in = True
+                        print("Connexion réussie!")
+                    else:
+                        print("Email ou mot de passe incorrect.")
+
+        else:
+            draw_text("Bienvenue sur Discord!", font, TEXT_COLOR, screen, 50, 50)
+            draw_button(screen, 10, 10, 120, 40, "Déconnexion", font, BUTTON_COLOR, BUTTON_HOVER_COLOR)
+            mouse_pos = pygame.mouse.get_pos()
+            if pygame.mouse.get_pressed()[0]:
+                if 10 < mouse_pos[0] < 130 and 10 < mouse_pos[1] < 50:
+                    logged_in = False
+
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()
