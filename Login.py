@@ -69,3 +69,31 @@ def check_login(email, password):
     cursor.execute(query, (email, password))
     result = cursor.fetchone()
     return result is not None
+
+def main():
+    clock = pygame.time.Clock()
+
+    running = True
+    logged_in = False
+
+    email_input = ""
+    password_input = ""
+
+    while running:
+        screen.fill(BACKGROUND_COLOR)
+        screen.blit(discord_logo, (325, 50))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN:
+                if not logged_in:
+                    if event.key == pygame.K_BACKSPACE:
+                        if email_input_box.collidepoint(pygame.mouse.get_pos()):
+                            email_input = email_input[:-1]
+                        elif password_input_box.collidepoint(pygame.mouse.get_pos()):
+                            password_input = password_input[:-1]
+                    elif len(email_input) < 50 and email_input_box.collidepoint(pygame.mouse.get_pos()):
+                        email_input += event.unicode
+                    elif len(password_input) < 20 and password_input_box.collidepoint(pygame.mouse.get_pos()):
+                        password_input += event.unicode
