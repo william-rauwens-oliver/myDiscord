@@ -10,7 +10,7 @@ class SignUp:
             password="willy",
             database="discord"
         )
-        
+
         self.cursor = self.db.cursor()
         pygame.init()
         self.BACKGROUND_COLOR = (54, 57, 63)
