@@ -10,4 +10,5 @@ class Message:
 
     def text():
         pass
-   test
+    def test():
+        
