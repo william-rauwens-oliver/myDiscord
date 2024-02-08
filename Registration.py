@@ -81,3 +81,7 @@ def check_login(email, password):
     return result is not None
 
 # Fonction pour insérer un nouvel utilisateur dans la base de données
+def insert_user(name, first_name, email, password):
+    query = "INSERT INTO users (first_name, last_name, email, password) VALUES (%s, %s, %s, %s)"
+    cursor.execute(query, (name, first_name, email, password))
+    db.commit()
