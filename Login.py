@@ -20,7 +20,6 @@ class Login:
         self.INPUT_TEXT_COLOR = (255, 255, 255)
         self.BUTTON_COLOR = (114, 137, 218)
         self.BUTTON_HOVER_COLOR = (103, 123, 196)
-
         self.WIDTH, self.HEIGHT = 800, 600
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Connexion et Inscription")
