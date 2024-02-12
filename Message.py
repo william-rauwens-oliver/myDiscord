@@ -1,13 +1,20 @@
 class Message:
-    def __init__(self, content, author, timestamp, reactions=None):
+    def __init__(self, content, author, timestamp):
         self.content = content
         self.author = author
         self.timestamp = timestamp
-        self.reactions = reactions if reactions is not None else []
+        self.reactions = {}
 
     def add_reaction(self, emoji, reactor):
-        self.reactions.append((emoji, reactor))
+        if emoji in self.reactions:
+            self.reactions[emoji].append(reactor)
+        else:
+            self.reactions[emoji] = [reactor]
 
-    def text():
-        pass
-    geg
+    def remove_reaction(self, emoji, reactor):
+        if emoji in self.reactions and reactor in self.reactions[emoji]:
+            self.reactions[emoji].remove(reactor)
+
+    def get_reaction_count(self, emoji):
+        return len(self.reactions.get(emoji, []))
+
