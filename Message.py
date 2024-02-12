@@ -17,5 +17,4 @@ class Message:
 
     def get_reaction_count(self, emoji):
         return len(self.reactions.get(emoji, []))
-
-    def interaction():
+    
