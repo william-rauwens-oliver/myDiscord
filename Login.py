@@ -1,8 +1,11 @@
 import pygame
 import mysql.connector
+from LogOut import Logout
 
 class Login:
     def __init__(self):
+        pygame.init()
+
         self.db = mysql.connector.connect(
             host="localhost",
             user="root",
@@ -10,9 +13,6 @@ class Login:
             database="discord"
         )
         self.cursor = self.db.cursor()
-
-        pygame.init()
-
         self.BACKGROUND_COLOR = (54, 57, 63)
         self.TEXT_COLOR = (255, 255, 255)
         self.INPUT_BOX_COLOR = (44, 47, 51)
@@ -29,6 +29,9 @@ class Login:
 
         self.discord_logo = pygame.image.load('Data/Logo Discord.png')
         self.discord_logo = pygame.transform.scale(self.discord_logo, (150, 150))
+
+        # Initialisation de la classe Logout
+        self.logout_screen = Logout()  # Correction ici
 
     def draw_text(self, text, font, color, surface, x, y):
         textobj = font.render(text, True, color)
@@ -74,9 +77,9 @@ class Login:
 
         running = True
         logged_in = False
-
         email_input = ""
         password_input = ""
+        error_message = ""
 
         while running:
             self.screen.fill(self.BACKGROUND_COLOR)
@@ -107,23 +110,32 @@ class Login:
                     if 350 < mouse_pos[0] < 550 and 450 < mouse_pos[1] < 500:
                         if self.check_login(email_input, password_input):
                             logged_in = True
+                            error_message = ""  # Réinitialise le message d'erreur
                             print("Connexion réussie!")
                         else:
-                            print("Email ou mot de passe incorrect.")
+                            error_message = "Email ou mot de passe incorrect."  # Met à jour le message d'erreur
 
             else:
                 self.draw_text("Bienvenue sur Discord!", self.font, self.TEXT_COLOR, self.screen, 50, 50)
-                self.draw_button(self.screen, 10, 10, 120, 40, "Déconnexion", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR)
+                # Centrer le bouton de déconnexion
+                self.draw_button(self.screen, self.WIDTH / 2, self.HEIGHT / 2, 120, 40, "Déconnexion", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR)
                 mouse_pos = pygame.mouse.get_pos()
                 if pygame.mouse.get_pressed()[0]:
-                    if 10 < mouse_pos[0] < 130 and 10 < mouse_pos[1] < 50:
-                        logged_in = False
+                    if self.WIDTH / 2 - 60 < mouse_pos[0] < self.WIDTH / 2 + 60 and self.HEIGHT / 2 - 20 < mouse_pos[1] < self.HEIGHT / 2 + 20:
+                        # Affiche la fenêtre de déconnexion
+                        self.logout_screen.main()
+                        logged_in = False  # Déconnecte l'utilisateur après la fenêtre de déconnexion
 
-            pygame.display.flip()
+            # Affichage du message d'erreur
+            self.draw_text(error_message, self.font, (255, 0, 0), self.screen, 400, 500)
+
+            if pygame.display.get_init():
+                pygame.display.flip()
             clock.tick(60)
-
-        pygame.quit()
 
 if __name__ == "__main__":
     login = Login()
-    login.main()
+    try:
+        login.main()
+    finally:
+        pygame.quit()
