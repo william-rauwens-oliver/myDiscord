@@ -20,8 +20,7 @@ class Server:
         welcome_msg = "Welcome, %s! If you ever want to quit, type {quit} to exit." % name
         client.send(bytes(welcome_msg, "utf8"))
         msg = "%s has joined the chat!" % name
-        Server.broadcast(Message(msg, "Server", time.time()))  # Sending a welcome message
-        clients[client] = name
+        Server.broadcast(Message(msg, "Server", time.time())) 
         while True:
             msg = client.recv(BUFSIZ)
             if msg.strip() != bytes("{quit}", "utf8"):
