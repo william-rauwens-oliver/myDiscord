@@ -12,7 +12,7 @@ class Login:
             password="willy",
             database="discord"
         )
-        
+
         self.cursor = self.db.cursor()
         self.BACKGROUND_COLOR = (54, 57, 63)
         self.TEXT_COLOR = (255, 255, 255)
