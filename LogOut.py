@@ -36,9 +36,7 @@ class Logout:
 
         while running:
             self.screen.fill((54, 57, 63))
-
             self.draw_text("Êtes-vous sûr de vouloir vous déconnecter ?", self.font, (255, 255, 255), self.screen, self.WIDTH // 2, self.HEIGHT // 3)
-
             self.draw_button(self.screen, self.WIDTH // 2, self.HEIGHT // 2, 200, 50, "Déconnexion", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR)
             self.draw_button(self.screen, self.WIDTH // 2, self.HEIGHT // 2 + 70, 200, 50, "Annuler", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR)
 
@@ -50,7 +48,7 @@ class Logout:
                         mouse_pos = pygame.mouse.get_pos()
                         if 300 < mouse_pos[0] < 500 and 250 < mouse_pos[1] < 300:
                             print("Déconnexion...")
-                            running = False  # Quitte la boucle de déconnexion
+                            running = False
 
             if pygame.display.get_init():
                 pygame.display.flip()

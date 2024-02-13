@@ -12,6 +12,7 @@ class Login:
             password="willy",
             database="discord"
         )
+        
         self.cursor = self.db.cursor()
         self.BACKGROUND_COLOR = (54, 57, 63)
         self.TEXT_COLOR = (255, 255, 255)
@@ -23,15 +24,11 @@ class Login:
         self.WIDTH, self.HEIGHT = 800, 600
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Connexion et Inscription")
-
         self.font = pygame.font.Font(None, 24)
         self.input_font = pygame.font.Font(None, 20)
-
         self.discord_logo = pygame.image.load('Data/Logo Discord.png')
         self.discord_logo = pygame.transform.scale(self.discord_logo, (150, 150))
-
-        # Initialisation de la classe Logout
-        self.logout_screen = Logout()  # Correction ici
+        self.logout_screen = Logout()
 
     def draw_text(self, text, font, color, surface, x, y):
         textobj = font.render(text, True, color)
@@ -39,11 +36,11 @@ class Login:
         textrect.center = (x, y)
         surface.blit(textobj, textrect)
 
-    def draw_input_box(self, surface, x, y, width, height, text, font, text_input):
+    def draw_input_box(self, surface, x, y, width, height, text, font, text_input, border_radius=10):
         input_box = pygame.Rect(0, 0, width, height)
         input_box.center = (x, y)
-        pygame.draw.rect(surface, self.INPUT_BOX_COLOR, input_box)
-        pygame.draw.rect(surface, self.INPUT_BOX_BORDER_COLOR, input_box, 2)
+        pygame.draw.rect(surface, self.INPUT_BOX_COLOR, input_box, border_radius=border_radius)
+        pygame.draw.rect(surface, self.INPUT_BOX_BORDER_COLOR, input_box, 2, border_radius=border_radius)
 
         if text_input == "":
             default_text = font.render("Entrez votre " + text.lower(), True, (128, 128, 128))
@@ -101,32 +98,26 @@ class Login:
                             password_input += event.unicode
 
             if not logged_in:
-                email_input_box = self.draw_input_box(self.screen, 400, 300, 300, 40, "Email", self.input_font, email_input)
-                password_input_box = self.draw_input_box(self.screen, 400, 370, 300, 40, "Mot de passe", self.input_font, password_input)
-
-                # Ajout de border-radius pour les boutons de connexion
+                email_input_box = self.draw_input_box(self.screen, 400, 300, 300, 40, "Email", self.input_font, email_input, border_radius=20)
+                password_input_box = self.draw_input_box(self.screen, 400, 370, 300, 40, "Mot de passe", self.input_font, password_input, border_radius=20)
                 self.draw_button(self.screen, 400, 450, 200, 50, "Se connecter", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR, border_radius=20)
                 mouse_pos = pygame.mouse.get_pos()
                 if pygame.mouse.get_pressed()[0]:
                     if 350 < mouse_pos[0] < 550 and 450 < mouse_pos[1] < 500:
                         if self.check_login(email_input, password_input):
                             logged_in = True
-                            error_message = ""  # Réinitialise le message d'erreur
+                            error_message = ""
                             print("Connexion réussie!")
                         else:
-                            error_message = "Email ou mot de passe incorrect."  # Met à jour le message d'erreur
-
+                            error_message = "Email ou mot de passe incorrect."
             else:
-                # Centrer le texte "Bienvenue sur Discord!"
                 self.draw_text("Bienvenue sur Discord!", self.font, self.TEXT_COLOR, self.screen, self.WIDTH / 2, self.HEIGHT / 2)
-                # Centrer le bouton de déconnexion
                 self.draw_button(self.screen, self.WIDTH / 2, self.HEIGHT / 2 + 100, 120, 40, "Déconnexion", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR)
                 mouse_pos = pygame.mouse.get_pos()
                 if pygame.mouse.get_pressed()[0]:
                     if self.WIDTH / 2 - 60 < mouse_pos[0] < self.WIDTH / 2 + 60 and self.HEIGHT / 2 + 80 < mouse_pos[1] < self.HEIGHT / 2 + 120:
-                        # Affiche la fenêtre de déconnexion
                         self.logout_screen.main()
-                        logged_in = False  # Déconnecte l'utilisateur après la fenêtre de déconnexion
+                        logged_in = False
 
             # Affichage du message d'erreur
             self.draw_text(error_message, self.font, (255, 0, 0), self.screen, 400, 500)
