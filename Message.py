@@ -17,4 +17,6 @@ class Message:
 
     def get_reaction_count(self, emoji):
         return len(self.reactions.get(emoji, []))
-    
+
+    def to_string(self):
+        return f"{self.timestamp} {self.author}: {self.content}"

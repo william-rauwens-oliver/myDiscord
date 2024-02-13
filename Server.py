@@ -1,5 +1,7 @@
 from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
+from Message import Message
+import time
 
 class Server:
     @staticmethod
@@ -18,23 +20,23 @@ class Server:
         welcome_msg = "Welcome, %s! If you ever want to quit, type {quit} to exit." % name
         client.send(bytes(welcome_msg, "utf8"))
         msg = "%s has joined the chat!" % name
-        Server.broadcast(bytes(msg, "utf8"))
+        Server.broadcast(Message(msg, "Server", time.time()))  # Sending a welcome message
         clients[client] = name
         while True:
             msg = client.recv(BUFSIZ)
             if msg.strip() != bytes("{quit}", "utf8"):
-                Server.broadcast(msg, name+": ")
+                Server.broadcast(Message(msg.decode("utf8"), name, time.time()), name+": ")
             else:
                 client.send(bytes("{quit}", "utf8"))
                 client.close()
                 del clients[client]
-                Server.broadcast(bytes("%s has left the chat." % name, "utf8"))
+                Server.broadcast(Message("%s has left the chat." % name, "Server", time.time()))
                 break
 
     @staticmethod
-    def broadcast(msg, prefix=""):
+    def broadcast(message, prefix=""):
         for sock in clients:
-            sock.send(bytes(prefix, "utf8") + msg)
+            sock.send(bytes(prefix, "utf8") + message.to_string())
 
 clients = {}
 addresses = {}
