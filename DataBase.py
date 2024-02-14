@@ -17,6 +17,18 @@ class Database:
         return result is not None
 
     def insert_user(self, name, first_name, email, password):
-        query = "INSERT INTO users (first_name, last_name, email, password) VALUES (%s, %s, %s, %s)"
-        self.cursor.execute(query, (name, first_name, email, password))
-        self.db.commit()
+        # Vérifier si l'e-mail existe déjà dans la base de données
+        check_query = "SELECT * FROM users WHERE email = %s"
+        self.cursor.execute(check_query, (email,))
+        existing_user = self.cursor.fetchone()
+        
+        if existing_user:
+            print("L'e-mail existe déjà dans la base de données.")
+            return False  # Retourner False pour indiquer que l'inscription a échoué
+        else:
+            # Insérer un nouvel utilisateur
+            query = "INSERT INTO users (first_name, last_name, email, password) VALUES (%s, %s, %s, %s)"
+            self.cursor.execute(query, (name, first_name, email, password))
+            self.db.commit()
+            print("Utilisateur inséré avec succès dans la base de données.")
+            return True  # Retourner True pour indiquer que l'inscription a réussi

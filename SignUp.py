@@ -8,6 +8,7 @@ class SignUp:
         pygame.init()
         self.BACKGROUND_COLOR = (54, 57, 63)
         self.TEXT_COLOR = (255, 255, 255)
+        self.ERROR_COLOR = (255, 0, 0)  # Couleur pour le message d'erreur
         self.INPUT_BOX_COLOR = (44, 47, 51)
         self.INPUT_BOX_BORDER_COLOR = (35, 39, 42)
         self.INPUT_TEXT_COLOR = (255, 255, 255)
@@ -20,6 +21,7 @@ class SignUp:
         self.input_font = pygame.font.Font(None, 20)
         self.discord_logo = pygame.image.load('Data/Logo Discord.png')
         self.discord_logo = pygame.transform.scale(self.discord_logo, (150, 150))
+        self.error_message = ""
 
     def draw_text(self, text, font, color, surface, x, y):
         textobj = font.render(text, True, color)
@@ -99,15 +101,26 @@ class SignUp:
                 email_input_box = self.draw_input_box(self.screen, 400, 370, 300, 40, "Email", self.input_font, email_input)
                 password_input_box = self.draw_input_box(self.screen, 400, 430, 300, 40, "Mot de passe", self.input_font, password_input)
 
+                # Dessiner le bouton "S'inscrire"
                 self.draw_button(self.screen, 400, 500, 200, 50, "S'inscrire", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR)
                 mouse_pos = pygame.mouse.get_pos()
                 if pygame.mouse.get_pressed()[0]:
                     if 350 < mouse_pos[0] < 550 and 500 < mouse_pos[1] < 550:
-                        self.db.insert_user(name_input, first_name_input, email_input, password_input)
-                        logged_in = True
-                        os.system("python MainMessages.py")
+                        # Vérifier si tous les champs sont remplis avant l'inscription
+                        if name_input and first_name_input and email_input and password_input:
+                            self.db.insert_user(name_input, first_name_input, email_input, password_input)
+                            logged_in = True
+                            os.system("python MainMessages.py")
+                        else:
+                            # Afficher un message d'erreur si tous les champs ne sont pas remplis
+                            self.error_message = "Veuillez remplir tous les champs d'inscription."
+
+                # Dessiner le message d'erreur s'il existe
+                if self.error_message:
+                    self.draw_text(self.error_message, self.font, self.ERROR_COLOR, self.screen, self.WIDTH // 2, 550)
 
             else:
+                # Affichage de l'écran principal après la connexion
                 self.draw_text("Bienvenue sur Discord!", self.font, self.TEXT_COLOR, self.screen, 50, 50)
                 self.draw_button(self.screen, 10, 10, 120, 40, "Déconnexion", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR)
                 mouse_pos = pygame.mouse.get_pos()

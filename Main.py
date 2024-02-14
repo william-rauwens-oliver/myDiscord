@@ -6,15 +6,15 @@ class Main:
     def __init__(self):
         pygame.init()
 
-        self.WIDTH, self.HEIGHT = 400, 200
+        self.WIDTH, self.HEIGHT = 800, 600  # Modification de la taille de la fenêtre
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Choix de l'action")
-        self.font = pygame.font.Font(None, 24)
+        self.font = pygame.font.Font(None, 36)  # Ajustement de la taille de la police
 
     def draw_text(self, text, font, color, surface, x, y):
         textobj = font.render(text, True, color)
         textrect = textobj.get_rect()
-        textrect.topleft = (x, y)
+        textrect.center = (x, y)  # Centrer le texte
         surface.blit(textobj, textrect)
 
     def main(self):
@@ -28,15 +28,16 @@ class Main:
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if 50 <= event.pos[0] <= 150 and 80 <= event.pos[1] <= 120:
+                    if 300 <= event.pos[0] <= 500 and 400 <= event.pos[1] <= 450:
                         login = Login()
                         login.main()
-                    elif 250 <= event.pos[0] <= 350 and 80 <= event.pos[1] <= 120:
+                    elif 300 <= event.pos[0] <= 500 and 500 <= event.pos[1] <= 550:
                         signup = SignUp()
                         signup.main()
 
-            self.draw_text("Se connecter", self.font, (255, 255, 255), self.screen, 50, 80)
-            self.draw_text("S'inscrire", self.font, (255, 255, 255), self.screen, 250, 80)
+            # Ajuster les positions des textes
+            self.draw_text("Se connecter", self.font, (255, 255, 255), self.screen, self.WIDTH // 2, 450)
+            self.draw_text("S'inscrire", self.font, (255, 255, 255), self.screen, self.WIDTH // 2, 550)
 
             pygame.display.flip()
             clock.tick(60)
