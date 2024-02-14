@@ -7,7 +7,6 @@ class Login:
         pygame.init()
 
         self.db = Database()
-
         self.BACKGROUND_COLOR = (54, 57, 63)
         self.TEXT_COLOR = (255, 255, 255)
         self.INPUT_BOX_COLOR = (44, 47, 51)
@@ -110,8 +109,6 @@ class Login:
                     if self.WIDTH / 2 - 60 < mouse_pos[0] < self.WIDTH / 2 + 60 and self.HEIGHT / 2 + 80 < mouse_pos[1] < self.HEIGHT / 2 + 120:
                         self.logout_screen.main()
                         logged_in = False
-
-            # Affichage du message d'erreur
             self.draw_text(error_message, self.font, (255, 0, 0), self.screen, 400, 500)
 
             if pygame.display.get_init():
