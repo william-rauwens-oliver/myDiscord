@@ -1,19 +1,13 @@
 import pygame
-import mysql.connector
+from DataBase import Database
 from LogOut import Logout
 
 class Login:
     def __init__(self):
         pygame.init()
 
-        self.db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="willy",
-            database="discord"
-        )
+        self.db = Database()
 
-        self.cursor = self.db.cursor()
         self.BACKGROUND_COLOR = (54, 57, 63)
         self.TEXT_COLOR = (255, 255, 255)
         self.INPUT_BOX_COLOR = (44, 47, 51)
@@ -65,9 +59,7 @@ class Login:
 
     def check_login(self, email, password):
         query = "SELECT * FROM users WHERE email = %s AND password = %s"
-        self.cursor.execute(query, (email, password))
-        result = self.cursor.fetchone()
-        return result is not None
+        return self.db.check_login(email, password)
 
     def main(self):
         clock = pygame.time.Clock()

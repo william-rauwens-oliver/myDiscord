@@ -1,17 +1,10 @@
 import pygame
-import mysql.connector
 import os
+from DataBase import Database
 
 class SignUp:
     def __init__(self):
-        self.db = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="willy",
-            database="discord"
-        )
-
-        self.cursor = self.db.cursor()
+        self.db = Database()
         pygame.init()
         self.BACKGROUND_COLOR = (54, 57, 63)
         self.TEXT_COLOR = (255, 255, 255)
@@ -60,17 +53,6 @@ class SignUp:
         mouse_pos = pygame.mouse.get_pos()
         if button_rect.collidepoint(mouse_pos):
             pygame.draw.rect(surface, hover_color, button_rect, 2)
-
-    def check_login(self, email, password):
-        query = "SELECT * FROM users WHERE email = %s AND password = %s"
-        self.cursor.execute(query, (email, password))
-        result = self.cursor.fetchone()
-        return result is not None
-
-    def insert_user(self, name, first_name, email, password):
-        query = "INSERT INTO users (first_name, last_name, email, password) VALUES (%s, %s, %s, %s)"
-        self.cursor.execute(query, (name, first_name, email, password))
-        self.db.commit()
 
     def main(self):
         clock = pygame.time.Clock()
@@ -121,7 +103,7 @@ class SignUp:
                 mouse_pos = pygame.mouse.get_pos()
                 if pygame.mouse.get_pressed()[0]:
                     if 350 < mouse_pos[0] < 550 and 500 < mouse_pos[1] < 550:
-                        self.insert_user(name_input, first_name_input, email_input, password_input)
+                        self.db.insert_user(name_input, first_name_input, email_input, password_input)
                         logged_in = True
                         os.system("python MainMessages.py")
 
@@ -139,5 +121,5 @@ class SignUp:
         pygame.quit()
 
 if __name__ == "__main__":
-    inscription =  SignUp()
+    inscription = SignUp()
     inscription.main()
