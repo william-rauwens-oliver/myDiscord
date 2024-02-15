@@ -1,6 +1,7 @@
 import pygame
 import os
 from DataBase import Database
+from LogOut import Logout
 
 class SignUp:
     def __init__(self):
@@ -20,6 +21,7 @@ class SignUp:
         self.input_font = pygame.font.Font(None, 20)
         self.discord_logo = pygame.image.load('Data/Logo Discord.png')
         self.discord_logo = pygame.transform.scale(self.discord_logo, (150, 150))
+        self.logout_screen = Logout()
 
     def draw_text(self, text, font, color, surface, x, y):
         textobj = font.render(text, True, color)
@@ -30,11 +32,11 @@ class SignUp:
     def draw_rounded_rect(self, surface, color, rect, radius=10):
         pygame.draw.rect(surface, color, rect, border_radius=radius)
 
-    def draw_input_box(self, surface, x, y, width, height, text, font, text_input):
+    def draw_input_box(self, surface, x, y, width, height, text, font, text_input, border_radius=10):
         input_box = pygame.Rect(0, 0, width, height)
         input_box.center = (x, y)
-        self.draw_rounded_rect(surface, self.INPUT_BOX_COLOR, input_box)
-        pygame.draw.rect(surface, self.INPUT_BOX_BORDER_COLOR, input_box, 2)
+        self.draw_rounded_rect(surface, self.INPUT_BOX_COLOR, input_box, radius=border_radius)
+        pygame.draw.rect(surface, self.INPUT_BOX_BORDER_COLOR, input_box, 2, border_radius=border_radius)
 
         if text_input == "":
             default_text = font.render("Entrez votre " + text.lower(), True, (128, 128, 128))
@@ -42,20 +44,20 @@ class SignUp:
         else:
             text_surface = font.render(text_input, True, self.INPUT_TEXT_COLOR)
             surface.blit(text_surface, text_surface.get_rect(center=input_box.center))
-        
+
         return input_box
 
-    def draw_button(self, surface, x, y, width, height, text, font, color, hover_color):
+    def draw_button(self, surface, x, y, width, height, text, font, color, hover_color, border_radius=10):
         button_rect = pygame.Rect(0, 0, width, height)
         button_rect.center = (x, y)
-        self.draw_rounded_rect(surface, color, button_rect)
-        pygame.draw.rect(surface, self.INPUT_BOX_BORDER_COLOR, button_rect, 2)
+        self.draw_rounded_rect(surface, color, button_rect, radius=border_radius)
+        pygame.draw.rect(surface, self.INPUT_BOX_BORDER_COLOR, button_rect, 2, border_radius=border_radius)
         text_surface = font.render(text, True, self.TEXT_COLOR)
         text_rect = text_surface.get_rect(center=button_rect.center)
         surface.blit(text_surface, text_rect)
         mouse_pos = pygame.mouse.get_pos()
         if button_rect.collidepoint(mouse_pos):
-            pygame.draw.rect(surface, hover_color, button_rect, 2)
+            pygame.draw.rect(surface, hover_color, button_rect, 2, border_radius=border_radius)
 
     def main(self):
         clock = pygame.time.Clock()
@@ -97,12 +99,12 @@ class SignUp:
 
             if not logged_in:
 
-                name_input_box = self.draw_input_box(self.screen, 400, 250, 300, 40, "Nom", self.input_font, name_input)
-                first_name_input_box = self.draw_input_box(self.screen, 400, 310, 300, 40, "Prénom", self.input_font, first_name_input)
-                email_input_box = self.draw_input_box(self.screen, 400, 370, 300, 40, "Email", self.input_font, email_input)
-                password_input_box = self.draw_input_box(self.screen, 400, 430, 300, 40, "Mot de passe", self.input_font, password_input)
+                name_input_box = self.draw_input_box(self.screen, 400, 250, 300, 40, "Nom", self.input_font, name_input, border_radius=20)
+                first_name_input_box = self.draw_input_box(self.screen, 400, 310, 300, 40, "Prénom", self.input_font, first_name_input, border_radius=20)
+                email_input_box = self.draw_input_box(self.screen, 400, 370, 300, 40, "Email", self.input_font, email_input, border_radius=20)
+                password_input_box = self.draw_input_box(self.screen, 400, 430, 300, 40, "Mot de passe", self.input_font, password_input, border_radius=20)
 
-                self.draw_button(self.screen, 400, 500, 200, 50, "S'inscrire", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR)
+                self.draw_button(self.screen, 400, 500, 200, 50, "S'inscrire", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR, border_radius=20)
                 mouse_pos = pygame.mouse.get_pos()
                 if pygame.mouse.get_pressed()[0]:
                     if 350 < mouse_pos[0] < 550 and 500 < mouse_pos[1] < 550:
@@ -112,7 +114,7 @@ class SignUp:
 
             else:
                 self.draw_text("Bienvenue sur Discord!", self.font, self.TEXT_COLOR, self.screen, 50, 50)
-                self.draw_button(self.screen, 10, 10, 120, 40, "Déconnexion", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR)
+                self.draw_button(self.screen, 10, 10, 120, 40, "Déconnexion", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR, border_radius=20)
                 mouse_pos = pygame.mouse.get_pos()
                 if pygame.mouse.get_pressed()[0]:
                     if 10 < mouse_pos[0] < 130 and 10 < mouse_pos[1] < 50:

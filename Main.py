@@ -35,7 +35,7 @@ class Main:
                     if 300 <= event.pos[0] <= 500 and 250 <= event.pos[1] <= 300:
                         login = Login()
                         login.main()
-                        login_window_closed = True  # Indique que la fenêtre de connexion est fermée
+                        login_window_closed = True
                     elif 300 <= event.pos[0] <= 500 and 350 <= event.pos[1] <= 400:
                         signup = SignUp()
                         signup.main()
