@@ -9,6 +9,7 @@ class Main:
         self.WIDTH, self.HEIGHT = 800, 600  
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Choix de l'action")
+        self.font_title = pygame.font.Font(None, 60) 
         self.font = pygame.font.Font(None, 36)  
 
     def draw_text(self, text, font, color, surface, x, y):
@@ -46,11 +47,16 @@ class Main:
         running = True
 
         while running:
-            self.screen.fill((54, 57, 63))  # Couleur de fond inspirée de Discord
+            self.screen.fill((54, 57, 63))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                    
+            title_text = "Bienvenue"
+            title_render = self.font_title.render(title_text, True, (255, 255, 255))
+            title_rect = title_render.get_rect(center=(self.WIDTH // 2, 100))
+            self.screen.blit(title_render, title_rect)
 
             self.draw_button(self.screen, 400, 275, 200, 50, "Se connecter", self.font, (114, 137, 218), (103, 123, 196), border_radius=20, action=self.login_action)
             self.draw_button(self.screen, 400, 375, 200, 50, "S'inscrire", self.font, (114, 137, 218), (103, 123, 196), border_radius=20, action=self.signup_action)
