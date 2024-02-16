@@ -95,7 +95,9 @@ class Login:
                 mouse_pos = pygame.mouse.get_pos()
                 if pygame.mouse.get_pressed()[0]:
                     if 350 < mouse_pos[0] < 550 and 450 < mouse_pos[1] < 500:
-                        if self.check_login(email_input, password_input):
+                        if email_input.strip() == "" or password_input.strip() == "":
+                            error_message = "Veuillez entrer une adresse e-mail et un mot de passe."
+                        elif self.check_login(email_input, password_input):
                             logged_in = True
                             error_message = ""
                             print("Connexion réussie!")
