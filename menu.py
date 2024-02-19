@@ -41,7 +41,7 @@ aller_a_niveau = False
 lecture_video = True
 
 # Bande son
-pygame.mixer.music.load("img-son23/sonore.mp3")
+pygame.mixer.music.load("img-son23/music.mp3")
 pygame.mixer.music.set_volume(3)
 pygame.mixer.music.play(1)  
 
