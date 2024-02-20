@@ -1,3 +1,4 @@
+# Fichier : Login.py
 import pygame
 from DataBase import Database
 from LogOut import Logout
@@ -56,6 +57,20 @@ class Login:
         if button_rect.collidepoint(mouse_pos):
             pygame.draw.rect(surface, hover_color, button_rect, 2, border_radius=border_radius)
 
+    def draw_return_button(self, surface, x, y, width, height, text, font, color, hover_color, border_radius=10):
+        button_rect = pygame.Rect(0, 0, width, height)
+        button_rect.topleft = (x, y)  
+        pygame.draw.rect(surface, color, button_rect, border_radius=border_radius)
+        pygame.draw.rect(surface, self.INPUT_BOX_BORDER_COLOR, button_rect, 2, border_radius=border_radius)
+        text_surface = font.render(text, True, self.TEXT_COLOR)
+        text_rect = text_surface.get_rect(topleft=(x, y))  
+        surface.blit(text_surface, text_rect)
+        mouse_pos = pygame.mouse.get_pos()
+        if button_rect.collidepoint(mouse_pos):
+            pygame.draw.rect(surface, hover_color, button_rect, 2, border_radius=border_radius)
+            if pygame.mouse.get_pressed()[0]:
+                return "main"  # Retourne à main.py
+
     def check_login(self, email, password):
         query = "SELECT * FROM users WHERE email = %s AND password = %s"
         return self.db.check_login(email, password)
@@ -72,6 +87,10 @@ class Login:
         while running:
             self.screen.fill(self.BACKGROUND_COLOR)
             self.screen.blit(self.discord_logo, (325, 50))
+
+            # Dessiner le bouton "Retour"
+            if self.draw_return_button(self.screen, 10, 10, 100, 40, "Retour", self.font, (114, 137, 218), (103, 123, 196), border_radius=10):
+                return "main"  # Retourne à main.py
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -116,10 +135,3 @@ class Login:
             if pygame.display.get_init():
                 pygame.display.flip()
             clock.tick(60)
-
-if __name__ == "__main__":
-    login = Login()
-    try:
-        login.main()
-    finally:
-        pygame.quit()

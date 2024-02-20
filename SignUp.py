@@ -114,11 +114,18 @@ class SignUp:
 
             else:
                 self.draw_text("Bienvenue sur Discord!", self.font, self.TEXT_COLOR, self.screen, 50, 50)
-                self.draw_button(self.screen, 10, 10, 120, 40, "Déconnexion", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR, border_radius=20)
-                mouse_pos = pygame.mouse.get_pos()
                 if pygame.mouse.get_pressed()[0]:
+                    mouse_pos = pygame.mouse.get_pos()
                     if 10 < mouse_pos[0] < 130 and 10 < mouse_pos[1] < 50:
                         logged_in = False
+                        # Effacer les valeurs des champs de saisie
+                        name_input = ""
+                        first_name_input = ""
+                        email_input = ""
+                        password_input = ""
+                        
+
+                self.draw_button(self.screen, 10, 10, 120, 40, "Déconnexion", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR, border_radius=20)
 
             pygame.display.flip()
             clock.tick(60)

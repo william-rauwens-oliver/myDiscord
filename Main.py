@@ -1,3 +1,4 @@
+# Fichier : Main.py
 import pygame
 from Login import Login
 from SignUp import SignUp
@@ -12,6 +13,7 @@ class Main:
         self.font_title = pygame.font.Font(None, 60) 
         self.font = pygame.font.Font(None, 36)
         self.login_window_closed = False 
+        self.previous_window = None
 
     def draw_text(self, text, font, color, surface, x, y):
         textobj = font.render(text, True, color)
@@ -36,13 +38,19 @@ class Main:
         surface.blit(text_surface, text_rect)
 
     def login_action(self):
+        self.previous_window = "Main"
         login = Login()
-        login.main()
+        result = login.main()
+        if result == "Main":
+            self.back_to_main()
         self.login_window_closed = True
 
     def signup_action(self):
+        self.previous_window = "Main"
         signup = SignUp()
-        signup.main()
+        result = signup.main()
+        if result == "Main": 
+            self.back_to_main()
         self.login_window_closed = True
 
     def check_windows_closed(self):
@@ -69,11 +77,14 @@ class Main:
 
             if self.check_windows_closed():
                 running = False 
-
             pygame.display.flip()
             clock.tick(60)
 
         pygame.quit()
+
+    def back_to_main(self):
+        if self.previous_window == "Main":
+            self.login_window_closed = False
 
 if __name__ == "__main__":
     main_app = Main()
