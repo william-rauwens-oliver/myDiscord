@@ -9,6 +9,7 @@ class SignUp:
         pygame.init()
         self.BACKGROUND_COLOR = (54, 57, 63)
         self.TEXT_COLOR = (255, 255, 255)
+        self.ERROR_COLOR = (255, 0, 0)  # Couleur du texte d'erreur
         self.INPUT_BOX_COLOR = (44, 47, 51)
         self.INPUT_BOX_BORDER_COLOR = (35, 39, 42)
         self.INPUT_TEXT_COLOR = (255, 255, 255)
@@ -64,6 +65,7 @@ class SignUp:
 
         running = True
         logged_in = False
+        error_message = ""
 
         name_input = ""
         first_name_input = ""
@@ -98,19 +100,22 @@ class SignUp:
                             password_input += event.unicode
 
             if not logged_in:
-
-                name_input_box = self.draw_input_box(self.screen, 400, 250, 300, 40, "Nom", self.input_font, name_input, border_radius=20)
-                first_name_input_box = self.draw_input_box(self.screen, 400, 310, 300, 40, "Prénom", self.input_font, first_name_input, border_radius=20)
+                name_input_box = self.draw_input_box(self.screen, 400, 250, 300, 40, "Prenom", self.input_font, name_input, border_radius=20)
+                first_name_input_box = self.draw_input_box(self.screen, 400, 310, 300, 40, "Nom", self.input_font, first_name_input, border_radius=20)
                 email_input_box = self.draw_input_box(self.screen, 400, 370, 300, 40, "Email", self.input_font, email_input, border_radius=20)
                 password_input_box = self.draw_input_box(self.screen, 400, 430, 300, 40, "Mot de passe", self.input_font, password_input, border_radius=20)
 
                 self.draw_button(self.screen, 400, 500, 200, 50, "S'inscrire", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR, border_radius=20)
+                self.draw_text(error_message, self.font, self.ERROR_COLOR, self.screen, 400, 550)  # Afficher le message d'erreur
                 mouse_pos = pygame.mouse.get_pos()
                 if pygame.mouse.get_pressed()[0]:
                     if 350 < mouse_pos[0] < 550 and 500 < mouse_pos[1] < 550:
-                        self.db.insert_user(name_input, first_name_input, email_input, password_input)
-                        logged_in = True
-                        os.system("python MainMessages.py")
+                        if name_input and first_name_input and email_input and password_input:  # Check if all fields are filled
+                            self.db.insert_user(name_input, first_name_input, email_input, password_input)
+                            logged_in = True
+                            os.system("python MainMessages.py")
+                        else:
+                            error_message = "Veuillez remplir tous les champs"  # Définir le message d'erreur
 
             else:
                 self.draw_text("Bienvenue sur Discord!", self.font, self.TEXT_COLOR, self.screen, 50, 50)
