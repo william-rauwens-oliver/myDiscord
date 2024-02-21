@@ -1,4 +1,3 @@
-# Fichier : Main.py
 import pygame
 from Login import Login
 from SignUp import SignUp
@@ -41,7 +40,7 @@ class Main:
         self.previous_window = "Main"
         login = Login()
         result = login.main()
-        if result == "Main":
+        if result == "main":
             self.back_to_main()
         self.login_window_closed = True
 
@@ -49,7 +48,7 @@ class Main:
         self.previous_window = "Main"
         signup = SignUp()
         result = signup.main()
-        if result == "Main": 
+        if result == "main": 
             self.back_to_main()
         self.login_window_closed = True
 
@@ -81,7 +80,6 @@ class Main:
             clock.tick(60)
 
         pygame.quit()
-
     def back_to_main(self):
         if self.previous_window == "Main":
             self.login_window_closed = False
