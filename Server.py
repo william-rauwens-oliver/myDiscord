@@ -51,6 +51,9 @@ class Server:
             else:
                 self.broadcast(msg, name+": ")
                 self.insert_message_into_db(name, time.strftime('%Y-%m-%d %H:%M:%S'), msg.decode("utf8"))
+                print("Message received from %s: %s" % (name, msg.decode("utf8")))
+                print("Message inserted into database by %s: %s" % (name, msg.decode("utf8")))
+
 
     def broadcast(self, msg, prefix=""):
         for sock in self.clients:
