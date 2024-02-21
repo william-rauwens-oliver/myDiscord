@@ -1,58 +1,82 @@
 from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
-from Message import Message
+import mysql.connector
 import time
 
 class Server:
-    @staticmethod
-    def accept_incoming_connections(server):
-        while True:
-            client, client_address = server.accept()
-            print("%s:%s has connected." % client_address)
-            client.send(bytes(welcome, "utf8"))
-            client.send(bytes("Enter your name:", "utf8"))
-            addresses[client] = client_address
-            Thread(target=Server.handle_client, args=(client,)).start()
+    def __init__(self, host, port):
+        self.HOST = host
+        self.PORT = port
+        self.BUFSIZ = 1024
+        self.ADDR = (self.HOST, self.PORT)
+        self.SERVER = socket(AF_INET, SOCK_STREAM)
+        self.SERVER.bind(self.ADDR)
+        self.clients = {}
+        self.addresses = {}
+        self.db_config = {
+            'host': 'localhost',
+            'user': 'root',
+            'password': 'root',
+            'database': 'myDiscord'
+        }
+        self.mydb = mysql.connector.connect(**self.db_config)
 
-    @staticmethod
-    def handle_client(client):
-        name = client.recv(BUFSIZ).decode("utf8")
+    def accept_incoming_connections(self):
+        while True:
+            client, client_address = self.SERVER.accept()
+            print("%s:%s has connected." % client_address)
+            client.send(bytes("Welcome to the chat room! Please type your name and press Enter to join.", "utf8"))
+            self.addresses[client] = client_address
+            Thread(target=self.handle_client, args=(client,)).start()
+
+    def handle_client(self, client):
+        name = client.recv(self.BUFSIZ).decode("utf8")
+        if not name:
+            client.send(bytes("Please enter a valid name.", "utf8"))
+            client.close()
+            return
+
         welcome_msg = "Welcome, %s! If you ever want to quit, type {quit} to exit." % name
         client.send(bytes(welcome_msg, "utf8"))
-        msg = "%s has joined the chat!" % name
-        Server.broadcast(Message(msg, "Server", time.time())) 
+        self.broadcast(bytes("%s has joined the chat!" % name, "utf8"))
+
         while True:
-            msg = client.recv(BUFSIZ)
-            if msg.strip() != bytes("{quit}", "utf8"):
-                Server.broadcast(Message(msg.decode("utf8"), name, time.time()), name+": ")
-            else:
+            msg = client.recv(self.BUFSIZ)
+            if msg.strip() == bytes("{quit}", "utf8"):
                 client.send(bytes("{quit}", "utf8"))
                 client.close()
-                del clients[client]
-                Server.broadcast(Message("%s has left the chat." % name, "Server", time.time()))
+                del self.clients[client]
+                self.broadcast(bytes("%s has left the chat." % name, "utf8"))
                 break
+            else:
+                self.broadcast(msg, name+": ")
+                self.insert_message_into_db(name, time.strftime('%Y-%m-%d %H:%M:%S'), msg.decode("utf8"))
 
-    @staticmethod
-    def broadcast(message, prefix=""):
-        for sock in clients:
-            sock.send(bytes(prefix, "utf8") + message.to_string())
+    def broadcast(self, msg, prefix=""):
+        for sock in self.clients:
+            sock.send(bytes(prefix, "utf8") + msg)
 
-clients = {}
-addresses = {}
-
-HOST = '127.0.0.1'
-PORT = 33000
-BUFSIZ = 1024
-ADDR = (HOST, PORT)
-
-SERVER = socket(AF_INET, SOCK_STREAM)
-SERVER.bind(ADDR)
+    def insert_message_into_db(self, author, timestamp, content):
+        cursor = self.mydb.cursor()
+        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+        sql = "INSERT INTO messages (author, content, timestamp) VALUES (%s, %s, %s)"
+        cursor.execute(sql, (author, content, timestamp))
+        self.mydb.commit()
+        
+    
+    def run(self):
+        self.SERVER.listen(100)
+        print("Waiting for connection...")
+        ACCEPT_THREAD = Thread(target=self.accept_incoming_connections)
+        ACCEPT_THREAD.start()
+        ACCEPT_THREAD.join()
+        self.SERVER.close()
 
 if __name__ == "__main__":
-    welcome = "Welcome to the chat room! Please type your name and press Enter to join."
-    SERVER.listen(100)
-    print("Waiting for connection...")
-    ACCEPT_THREAD = Thread(target=Server.accept_incoming_connections, args=(SERVER,))
-    ACCEPT_THREAD.start()
-    ACCEPT_THREAD.join()
-    SERVER.close()
+    HOST = '127.0.0.1'
+    PORT = 33002
+    server = Server(HOST, PORT)
+    server.run()
+    
+    
+
