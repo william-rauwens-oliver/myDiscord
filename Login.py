@@ -117,7 +117,6 @@ class Login:
                 pygame.display.flip()
             clock.tick(60)
 
-# Programme principal
 if __name__ == "__main__":
     login = Login()
     login.main()
