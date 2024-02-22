@@ -1,4 +1,5 @@
-class Message:
+from Server import Server
+class Message(Server):
     def __init__(self, content, author, timestamp):
         self.content = content
         self.author = author
@@ -11,10 +12,6 @@ class Message:
         else:
             self.reactions[emoji] = [reactor]
 
-<<<<<<< HEAD
-    def text():
-        pass
-=======
     def remove_reaction(self, emoji, reactor):
         if emoji in self.reactions and reactor in self.reactions[emoji]:
             self.reactions[emoji].remove(reactor)
@@ -24,4 +21,3 @@ class Message:
 
     def to_string(self):
         return f"{self.timestamp} {self.author}: {self.content}"
->>>>>>> 648cb72818362b00e1567e2eba631c6e36a5a8c5
