@@ -57,7 +57,7 @@ while en_cours:
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == bouton:
-                    en_cours = False  # Sortir de la boucle while
+                    en_cours = False  
 
     gestionnaire.update(delta_temps)
 
@@ -73,13 +73,11 @@ while en_cours:
         frame_surface = pygame.image.frombuffer(frame.tobytes(), (largeur_fenetre, hauteur_fenetre), 'RGB')
         fenetre.blit(frame_surface, (0, 0))
 
-    # Mettre à jour l'interface utilisateur pygame_gui
     gestionnaire.update(delta_temps)
     gestionnaire.draw_ui(fenetre)
 
     pygame.display.update()
 
-# Libérer les ressources
 cap.release()
 cv2.destroyAllWindows()
 pygame.quit()
