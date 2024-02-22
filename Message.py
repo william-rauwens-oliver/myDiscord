@@ -1,4 +1,5 @@
-class Message:
+from Server import Server
+class Message(Server):
     def __init__(self, content, author, timestamp):
         self.content = content
         self.author = author

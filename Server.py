@@ -47,12 +47,15 @@ class Server:
                 client.close()
                 del self.clients[client]
                 self.broadcast(bytes("%s has left the chat." % name, "utf8"))
+                print("Client disconnected.")  
                 break
+       
             else:
                 self.broadcast(msg, name+": ")
                 self.insert_message_into_db(name, time.strftime('%Y-%m-%d %H:%M:%S'), msg.decode("utf8"))
                 print("Message received from %s: %s" % (name, msg.decode("utf8")))
                 print("Message inserted into database by %s: %s" % (name, msg.decode("utf8")))
+                print("Received message:", msg.decode("utf8"))  
 
 
     def broadcast(self, msg, prefix=""):
