@@ -4,7 +4,7 @@ import re
 from DataBase import Database
 from LogOut import Logout
 
-class SignUp:
+class BaseApplication:
     def __init__(self):
         self.db = Database()
         pygame.init()
@@ -65,6 +65,10 @@ class SignUp:
     def is_valid_email(self, email):
         pattern = r'^[a-zA-Z0-9._%+-]+@(?:gmail\.com|outlook\.com|yahoo\.com)$'
         return re.match(pattern, email)
+
+class SignUp(BaseApplication):
+    def __init__(self):
+        super().__init__()
 
     def main(self):
         clock = pygame.time.Clock()

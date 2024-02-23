@@ -2,7 +2,7 @@ import pygame
 from Login import Login
 from SignUp import SignUp
 
-class Main:
+class BaseScreen:
     def __init__(self):
         pygame.init()
 
@@ -36,6 +36,17 @@ class Main:
         text_rect = text_surface.get_rect(center=button_rect.center)
         surface.blit(text_surface, text_rect)
 
+    def check_windows_closed(self):
+        return self.login_window_closed
+
+    def back_to_main(self):
+        if self.previous_window == "Main":
+            self.login_window_closed = False
+
+class Main(BaseScreen):
+    def __init__(self):
+        super().__init__()
+
     def login_action(self):
         self.previous_window = "Main"
         login = Login()
@@ -51,9 +62,6 @@ class Main:
         if result == "main": 
             self.back_to_main()
         self.login_window_closed = True
-
-    def check_windows_closed(self):
-        return self.login_window_closed
 
     def main(self):
         clock = pygame.time.Clock()
@@ -80,9 +88,6 @@ class Main:
             clock.tick(60)
 
         pygame.quit()
-    def back_to_main(self):
-        if self.previous_window == "Main":
-            self.login_window_closed = False
 
 if __name__ == "__main__":
     main_app = Main()

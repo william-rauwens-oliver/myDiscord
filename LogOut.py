@@ -55,7 +55,13 @@ class Logout:
 
             clock.tick(60)
 
+class CustomLogout(Logout):
+    def __init__(self):
+        super().__init__()
+
+    # Ici, vous pouvez ajouter de nouvelles fonctionnalités spécifiques à CustomLogout si nécessaire
+
 if __name__ == "__main__":
-    logout = Logout()
+    logout = CustomLogout()
     logout.main()
     pygame.quit()
