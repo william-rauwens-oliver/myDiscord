@@ -1,6 +1,6 @@
 import pygame
 import os
-import re  # Module pour les expressions régulières
+import re
 from DataBase import Database
 from LogOut import Logout
 
@@ -10,7 +10,7 @@ class SignUp:
         pygame.init()
         self.BACKGROUND_COLOR = (54, 57, 63)
         self.TEXT_COLOR = (255, 255, 255)
-        self.ERROR_COLOR = (255, 0, 0)  # Couleur du texte d'erreur
+        self.ERROR_COLOR = (255, 0, 0)
         self.INPUT_BOX_COLOR = (44, 47, 51)
         self.INPUT_BOX_BORDER_COLOR = (35, 39, 42)
         self.INPUT_TEXT_COLOR = (255, 255, 255)
@@ -20,7 +20,7 @@ class SignUp:
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Connexion et Inscription")
         self.font = pygame.font.Font(None, 24)
-        self.small_font = pygame.font.Font(None, 18)  # Taille de police plus petite pour le message d'erreur
+        self.small_font = pygame.font.Font(None, 18)
         self.input_font = pygame.font.Font(None, 20)
         self.discord_logo = pygame.image.load('Data/Logo Discord.png')
         self.discord_logo = pygame.transform.scale(self.discord_logo, (150, 150))
@@ -63,7 +63,6 @@ class SignUp:
             pygame.draw.rect(surface, hover_color, button_rect, 2, border_radius=border_radius)
 
     def is_valid_email(self, email):
-        # Expression régulière pour valider l'adresse e-mail
         pattern = r'^[a-zA-Z0-9._%+-]+@(?:gmail\.com|outlook\.com|yahoo\.com)$'
         return re.match(pattern, email)
 
@@ -113,19 +112,19 @@ class SignUp:
                 password_input_box = self.draw_input_box(self.screen, 400, 430, 300, 40, "Mot de passe", self.input_font, password_input, border_radius=20)
 
                 self.draw_button(self.screen, 400, 500, 200, 50, "S'inscrire", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR, border_radius=20)
-                self.draw_text(error_message, self.small_font, self.ERROR_COLOR, self.screen, 400, 570)  # Afficher le message d'erreur en plus petit
+                self.draw_text(error_message, self.small_font, self.ERROR_COLOR, self.screen, 400, 570)
                 mouse_pos = pygame.mouse.get_pos()
                 if pygame.mouse.get_pressed()[0]:
                     if 350 < mouse_pos[0] < 550 and 500 < mouse_pos[1] < 550:
-                        if name_input and first_name_input and email_input and password_input:  # Check if all fields are filled
+                        if name_input and first_name_input and email_input and password_input:
                             if self.is_valid_email(email_input):
                                 self.db.insert_user(name_input, first_name_input, email_input, password_input)
                                 logged_in = True
                                 os.system("python MainMessages.py")
                             else:
-                                error_message = "Veuillez entrer une adresse e-mail valide avec les domaines suivants : gmail.com, outlook.com, yahoo.com"  # Message d'erreur
+                                error_message = "Veuillez entrer une adresse e-mail valide avec les domaines suivants : gmail.com, outlook.com, yahoo.com" 
                         else:
-                            error_message = "Veuillez remplir tous les champs"  # Définir le message d'erreur
+                            error_message = "Veuillez remplir tous les champs" 
 
             else:
                 self.draw_text("Bienvenue sur Discord!", self.font, self.TEXT_COLOR, self.screen, 50, 50)
@@ -137,7 +136,7 @@ class SignUp:
                         first_name_input = ""
                         email_input = ""
                         password_input = ""
-                        error_message = ""  # Réinitialiser le message d'erreur lors de la déconnexion
+                        error_message = ""
 
                 self.draw_button(self.screen, 10, 10, 120, 40, "Déconnexion", self.font, self.BUTTON_COLOR, self.BUTTON_HOVER_COLOR, border_radius=20)
 
