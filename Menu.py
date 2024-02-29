@@ -7,7 +7,8 @@ import pygame_gui
 pygame.init()
 
 # Fenêtre
-largeur_fenetre, hauteur_fenetre = 800, 800
+new_var = 1283, 762
+largeur_fenetre, hauteur_fenetre = new_var
 fenetre = pygame.display.set_mode((largeur_fenetre, hauteur_fenetre))
 
 # pygame_gui
@@ -64,7 +65,7 @@ while en_cours:
     if lecture_video:
         ret, frame = cap.read()
         if not ret:
-            # Réinitialiser la capture vidéo pour lire la vidéo depuis le début
+            
             cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
             ret, frame = cap.read()
 
