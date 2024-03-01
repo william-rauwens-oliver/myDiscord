@@ -2,6 +2,8 @@ import cv2
 import pygame
 import pygame_gui
 import time
+from tkinter import *
+from PIL import Image, ImageTk
 
 pygame.init()
 
@@ -42,10 +44,10 @@ def afficher_messages():
     y_rectangle = (hauteur_fenetre - hauteur_rectangle) // 2
 
     #  le rectangle
-    couleur_rect_transparent = (255, 255, 255, 100) 
+    couleur_rect_transparent = (255, 255, 255, 100)  # Couleur avec une opacité réduite
     pygame.draw.rect(fenetre, couleur_rect_transparent, (x_rectangle, y_rectangle, largeur_rectangle, hauteur_rectangle), 0, 8)
 
-    #  les messages
+    #  les msg
     y = y_rectangle + 20
     for message in messages:
         utilisateur = message[0]
@@ -59,11 +61,12 @@ def afficher_messages():
         fenetre.blit(texte_surface, (x_texte, y_texte))
         y += texte_surface.get_height() + 10
 
-# Boutons pour chaque utilisateur
+# Boutons  utilisateur
 rayon_bouton = 33
 espacement_bouton = 10
 decalage_x = 80
 decalage_y = 20
+
 
 boutons = []
 for i, utilisateur in enumerate(utilisateurs):
@@ -71,8 +74,8 @@ for i, utilisateur in enumerate(utilisateurs):
     bouton = pygame_gui.elements.UIButton(relative_rect=bouton_rect, text=utilisateur.nom, manager=manager)
     boutons.append((bouton, utilisateur.nom))
 
-bouton_message_vocal_rect = pygame.Rect((1120, 687), (50, 50))  
 
+bouton_message_vocal_rect = pygame.Rect((1120, 687), (50, 50)) 
 
 message_zone_texte = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((200, 700), (900, 50)),
                                                          manager=manager)
@@ -142,3 +145,4 @@ while running:
 
 fond_ecran.release()
 pygame.quit()
+
