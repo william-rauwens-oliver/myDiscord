@@ -1,4 +1,5 @@
 import pygame
+import subprocess
 from DataBase import Database
 from LogOut import Logout
 
@@ -103,6 +104,7 @@ class Login(UIComponent):
                             logged_in = True
                             error_message = ""
                             print("Connexion réussie!")
+                            subprocess.run(["python", "Menu.py"])
                         else:
                             error_message = "Email ou mot de passe incorrect."
             else:
