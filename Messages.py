@@ -2,8 +2,6 @@ import cv2
 import pygame
 import pygame_gui
 import time
-from tkinter import *
-from PIL import Image, ImageTk
 
 pygame.init()
 
@@ -17,7 +15,7 @@ vitesse_decalage = 3
 manager = pygame_gui.UIManager((largeur_fenetre, hauteur_fenetre))
 
 image_bouton_vocal = pygame.image.load("img-son23/micro1.png")
-image_bouton_vocal = pygame.transform.scale(image_bouton_vocal, (56, 56)) 
+image_bouton_vocal = pygame.transform.scale(image_bouton_vocal, (56, 56))
 
 class Utilisateur:
     def __init__(self, nom, couleur_message):
@@ -61,12 +59,11 @@ def afficher_messages():
         fenetre.blit(texte_surface, (x_texte, y_texte))
         y += texte_surface.get_height() + 10
 
-# Boutons  utilisateur
+
 rayon_bouton = 33
 espacement_bouton = 10
 decalage_x = 80
 decalage_y = 20
-
 
 boutons = []
 for i, utilisateur in enumerate(utilisateurs):
@@ -74,19 +71,28 @@ for i, utilisateur in enumerate(utilisateurs):
     bouton = pygame_gui.elements.UIButton(relative_rect=bouton_rect, text=utilisateur.nom, manager=manager)
     boutons.append((bouton, utilisateur.nom))
 
+# channel
+chaines_supplementaires = ["1", "2", "3"]
 
-bouton_message_vocal_rect = pygame.Rect((1120, 687), (50, 50)) 
+# Ajoutez les boutons pour les chaînes supplémentaires
+for i, chaine in enumerate(chaines_supplementaires):
+    bouton_chaine_rect = pygame.Rect((1120, 20 + i * (rayon_bouton * 2 + espacement_bouton)), (2 * rayon_bouton, 2 * rayon_bouton))
+    bouton_chaine = pygame_gui.elements.UIButton(relative_rect=bouton_chaine_rect, text=chaine, manager=manager)
+    boutons.append((bouton_chaine, chaine))
+
+bouton_message_vocal_rect = pygame.Rect((1120, 687), (50, 50))
 
 message_zone_texte = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((200, 700), (900, 50)),
                                                          manager=manager)
 
 def gerer_actions_boutons(utilisateur_nom):
     global utilisateur_selectionne
-    print(f"Bouton cliqué pour l'Utilisateur : {utilisateur_nom}")
+    print(f"Bouton cliqué pour l'Utilisateur/Chaîne : {utilisateur_nom}")
 
     utilisateur_selectionne = next((utilisateur for utilisateur in utilisateurs if utilisateur.nom == utilisateur_nom), None)
     if utilisateur_selectionne:
         messages.append((utilisateur_selectionne, "Bonjour!", utilisateur_selectionne.couleur_message))
+    # Ajoutez des actions pour les chaînes supplémentaires ici si nécessaire
 
 def afficher_image_bouton_vocal(rect):
     fenetre.blit(image_bouton_vocal, rect.topleft)
@@ -116,14 +122,14 @@ while running:
 
         if event.type == pygame.USEREVENT:
             if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                for bouton, utilisateur in boutons:
+                for bouton, item in boutons:
                     if event.ui_element == bouton:
-                        gerer_actions_boutons(utilisateur)
-            elif event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                gerer_message_vocal()
+                        gerer_actions_boutons(item)
+            # Gérez les événements pour les nouveaux boutons de chaîne si nécessaire
+
             elif event.user_type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
                 if event.ui_element == message_zone_texte:
-                    # recup du texte entré
+                    # récupération du texte entré
                     texte = event.text
                     if texte and utilisateur_selectionne:
                         messages.append((utilisateur_selectionne, texte, utilisateur_selectionne.couleur_message))
@@ -137,7 +143,7 @@ while running:
 
     manager.draw_ui(fenetre)
 
-    afficher_image_bouton_vocal(bouton_message_vocal_rect)  
+    afficher_image_bouton_vocal(bouton_message_vocal_rect)
 
     pygame.display.flip()
 
@@ -145,4 +151,3 @@ while running:
 
 fond_ecran.release()
 pygame.quit()
-
