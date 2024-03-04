@@ -1,4 +1,5 @@
 from turtle import Turtle, Screen
+import os
 
 def draw_square(some_turtle):
     for _ in range(4):
@@ -30,11 +31,12 @@ def draw_art():
     text_pen.penup()
     text_pen.color("white")
     text_pen.goto(0, 200)
-    
 
 window = Screen()
 window.bgcolor("black")
 
 draw_art()
 
-window.exitonclick()
+window.bye()
+
+os.system("python Connexion_or_Inscription.py")
