@@ -6,7 +6,7 @@ class Main:
     def __init__(self):
         pygame.init()
 
-        self.WIDTH, self.HEIGHT = 800, 600  
+        self.WIDTH, self.HEIGHT = 800, 600
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Choix de l'action")
         self.font_title = pygame.font.Font(None, 60) 
@@ -31,7 +31,6 @@ class Main:
                 action(*args)
         else:
             pygame.draw.rect(surface, color, button_rect, border_radius=border_radius)
-        
         text_surface = font.render(text, True, (255, 255, 255))
         text_rect = text_surface.get_rect(center=button_rect.center)
         surface.blit(text_surface, text_rect)
@@ -61,7 +60,6 @@ class Main:
 
         while running:
             self.screen.fill((54, 57, 63))
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -73,7 +71,6 @@ class Main:
 
             self.draw_button(self.screen, 400, 275, 200, 50, "Se connecter", self.font, (114, 137, 218), (103, 123, 196), border_radius=20, action=self.login_action)
             self.draw_button(self.screen, 400, 375, 200, 50, "S'inscrire", self.font, (114, 137, 218), (103, 123, 196), border_radius=20, action=self.signup_action)
-
             if self.check_windows_closed():
                 running = False 
             pygame.display.flip()
