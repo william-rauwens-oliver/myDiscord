@@ -104,7 +104,7 @@ class Login(UIComponent):
                             logged_in = True
                             error_message = ""
                             print("Connexion réussie!")
-                            subprocess.run(["python", "Menu.py"])
+                            subprocess.run(["python", "Messages.py"])  # Lancer Messages.py après la connexion réussie
                         else:
                             error_message = "Email ou mot de passe incorrect."
             else:
