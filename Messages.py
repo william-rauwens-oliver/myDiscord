@@ -2,8 +2,6 @@ import cv2
 import pygame
 import pygame_gui
 import time
-from tkinter import *
-from PIL import Image, ImageTk
 
 pygame.init()
 
@@ -11,12 +9,12 @@ largeur_fenetre = 1283
 hauteur_fenetre = 762
 fenetre = pygame.display.set_mode((largeur_fenetre, hauteur_fenetre))
 
-fond_ecran = cv2.VideoCapture('img-son23/pop.mp4')
+fond_ecran = cv2.VideoCapture('Data/img-son23/pop.mp4')
 vitesse_decalage = 3
 
 manager = pygame_gui.UIManager((largeur_fenetre, hauteur_fenetre))
 
-image_bouton_vocal = pygame.image.load("img-son23/micro1.png")
+image_bouton_vocal = pygame.image.load("Data/img-son23/micro1.png")
 image_bouton_vocal = pygame.transform.scale(image_bouton_vocal, (56, 56)) 
 
 class Utilisateur:

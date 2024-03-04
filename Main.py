@@ -7,7 +7,6 @@ def draw_square(some_turtle):
         some_turtle.right(90)
 
 def draw_art():
-    # Turtle Brad
     brad = Turtle(shape="turtle")
     brad.color("yellow")
     brad.pensize(2)
@@ -16,7 +15,6 @@ def draw_art():
         draw_square(brad)
         brad.right(10)
 
-    # Turtle Angie
     angie = Turtle(shape="turtle")
     angie.color("blue")
     angie.pensize(2)
@@ -26,7 +24,6 @@ def draw_art():
     angie.pendown()
     angie.circle(100)
 
-    # Ajout du texte "Discord"
     text_pen = Turtle()
     text_pen.penup()
     text_pen.color("white")
