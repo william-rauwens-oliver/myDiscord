@@ -85,7 +85,7 @@ class SignUp(BaseApplication):
         while running:
             self.screen.fill(self.BACKGROUND_COLOR)
             self.screen.blit(self.discord_logo, (325, 50))
-
+        
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False

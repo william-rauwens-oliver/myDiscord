@@ -25,11 +25,11 @@ class UIComponent:
         textrect.center = (x, y)
         self.screen.blit(textobj, textrect)
 
-    def draw_input_box(self, x, y, width, height, text, text_input, border_radius=0):  # Ajout du paramètre border_radius
+    def draw_input_box(self, x, y, width, height, text, text_input, border_radius=0):
         input_box = pygame.Rect(0, 0, width, height)
         input_box.center = (x, y)
-        pygame.draw.rect(self.screen, self.INPUT_BOX_COLOR, input_box, border_radius=border_radius)  # Utilisation du paramètre border_radius
-        pygame.draw.rect(self.screen, self.INPUT_BOX_BORDER_COLOR, input_box, 2, border_radius=border_radius)  # Utilisation du paramètre border_radius
+        pygame.draw.rect(self.screen, self.INPUT_BOX_COLOR, input_box, border_radius=border_radius)
+        pygame.draw.rect(self.screen, self.INPUT_BOX_BORDER_COLOR, input_box, 2, border_radius=border_radius)
 
         if text_input == "":
             default_text = self.font.render("Entrez votre " + text.lower(), True, (128, 128, 128))
@@ -40,17 +40,17 @@ class UIComponent:
 
         return input_box
 
-    def draw_button(self, x, y, width, height, text, border_radius=0):  # Ajout du paramètre border_radius
+    def draw_button(self, x, y, width, height, text, border_radius=0):
         button_rect = pygame.Rect(0, 0, width, height)
         button_rect.center = (x, y)
-        pygame.draw.rect(self.screen, self.BUTTON_COLOR, button_rect, border_radius=border_radius)  # Utilisation du paramètre border_radius
-        pygame.draw.rect(self.screen, self.INPUT_BOX_BORDER_COLOR, button_rect, 2, border_radius=border_radius)  # Utilisation du paramètre border_radius
+        pygame.draw.rect(self.screen, self.BUTTON_COLOR, button_rect, border_radius=border_radius)
+        pygame.draw.rect(self.screen, self.INPUT_BOX_BORDER_COLOR, button_rect, 2, border_radius=border_radius)
         text_surface = self.font.render(text, True, self.TEXT_COLOR)
         text_rect = text_surface.get_rect(center=button_rect.center)
         self.screen.blit(text_surface, text_rect)
         mouse_pos = pygame.mouse.get_pos()
         if button_rect.collidepoint(mouse_pos):
-            pygame.draw.rect(self.screen, self.BUTTON_HOVER_COLOR, button_rect, 2, border_radius=border_radius)  # Utilisation du paramètre border_radius
+            pygame.draw.rect(self.screen, self.BUTTON_HOVER_COLOR, button_rect, 2, border_radius=border_radius)
 
 class Login(UIComponent):
     def __init__(self):
@@ -91,9 +91,9 @@ class Login(UIComponent):
                             password_input += event.unicode
 
             if not logged_in:
-                email_input_box = self.draw_input_box(400, 300, 300, 40, "Email", email_input, border_radius=20)  # Utilisation du paramètre border_radius
-                password_input_box = self.draw_input_box(400, 370, 300, 40, "Mot de passe", password_input, border_radius=20)  # Utilisation du paramètre border_radius
-                self.draw_button(400, 450, 200, 50, "Se connecter", border_radius=20)  # Utilisation du paramètre border_radius
+                email_input_box = self.draw_input_box(400, 300, 300, 40, "Email", email_input, border_radius=20)
+                password_input_box = self.draw_input_box(400, 370, 300, 40, "Mot de passe", password_input, border_radius=20)
+                self.draw_button(400, 450, 200, 50, "Se connecter", border_radius=20)
                 mouse_pos = pygame.mouse.get_pos()
                 if pygame.mouse.get_pressed()[0]:
                     if 350 < mouse_pos[0] < 550 and 450 < mouse_pos[1] < 500:
@@ -107,7 +107,7 @@ class Login(UIComponent):
                             error_message = "Email ou mot de passe incorrect."
             else:
                 self.draw_text("Bienvenue sur Discord!", self.WIDTH / 2, self.HEIGHT / 2)
-                self.draw_button(self.WIDTH / 2, self.HEIGHT / 2 + 100, 120, 40, "Déconnexion", border_radius=20)  # Utilisation du paramètre border_radius
+                self.draw_button(self.WIDTH / 2, self.HEIGHT / 2 + 100, 120, 40, "Déconnexion", border_radius=20)
                 mouse_pos = pygame.mouse.get_pos()
                 if pygame.mouse.get_pressed()[0]:
                     if self.WIDTH / 2 - 60 < mouse_pos[0] < self.WIDTH / 2 + 60 and self.HEIGHT / 2 + 80 < mouse_pos[1] < self.HEIGHT / 2 + 120:
