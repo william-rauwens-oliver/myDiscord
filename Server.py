@@ -3,6 +3,7 @@ from threading import Thread
 import mysql.connector
 import time
 
+
 class Server:
     def __init__(self, host, port):
         self.HOST = host
@@ -20,6 +21,7 @@ class Server:
             'database': 'myDiscord'
         }
         self.mydb = mysql.connector.connect(**self.db_config)
+        self.messages = []  
 
     def accept_incoming_connections(self):
         while True:
@@ -38,38 +40,75 @@ class Server:
 
         welcome_msg = "Welcome, %s! If you ever want to quit, type {quit} to exit." % name
         client.send(bytes(welcome_msg, "utf8"))
-        self.broadcast(bytes("%s has joined the chat!" % name, "utf8"))
 
-        while True:
+        tchat=True
+        while tchat:
             msg = client.recv(self.BUFSIZ)
-            if msg.strip() == bytes("{quit}", "utf8"):
+            if msg.strip() != bytes("{quit}", "utf8"):
+                if name in self.clients.values():
+                    self.broadcast(msg, name+": ")
+                self.messages.append((name, msg.decode("utf8"))) 
+                print("Message received from %s: %s" % (name, msg.decode("utf8")))
+                print("Received message:", msg.decode("utf8"))
+                if msg:
+                    self.insert_messages_into_db()
+            else:
                 client.send(bytes("{quit}", "utf8"))
                 client.close()
                 del self.clients[client]
                 self.broadcast(bytes("%s has left the chat." % name, "utf8"))
-                print("Client disconnected.")  
-                break
-       
-            else:
-                self.broadcast(msg, name+": ")
-                self.insert_message_into_db(name, time.strftime('%Y-%m-%d %H:%M:%S'), msg.decode("utf8"))
-                print("Message received from %s: %s" % (name, msg.decode("utf8")))
-                print("Message inserted into database by %s: %s" % (name, msg.decode("utf8")))
-                print("Received message:", msg.decode("utf8"))  
+                print("Client disconnected.")
+                tchat=False
+          
+
+            
+                
+        
+                
+        
+        
+            
+
+        
 
 
     def broadcast(self, msg, prefix=""):
         for sock in self.clients:
             sock.send(bytes(prefix, "utf8") + msg)
 
-    def insert_message_into_db(self, author, timestamp, content):
+    def insert_messages_into_db(self):
         cursor = self.mydb.cursor()
-        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-        sql = "INSERT INTO messages (author, content, timestamp) VALUES (%s, %s, %s)"
-        cursor.execute(sql, (author, content, timestamp))
-        self.mydb.commit()
-        
+        for author, content in self.messages:
+            timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+            sql = "INSERT INTO messages (author, content, timestamp) VALUES (%s, %s, %s)"
+            cursor.execute(sql, (author, content, timestamp))
+            self.mydb.commit()
+            
+
+    def delete_messages_from_db(self):
+        cursor = self.mydb.cursor()
+        for author, content in self.messages:
+            sql = "DELETE FROM messages WHERE author = %s AND content = %s"
+            cursor.execute(sql, (author, content))
+            self.mydb.commit()
     
+    def update_messages_in_db(self):
+        cursor = self.mydb.cursor()
+        for author, content, new_content in self.messages:
+            sql = "UPDATE messages SET content = %s WHERE author = %s AND content = %s"
+            cursor.execute(sql, (new_content, author, content))
+            self.mydb.commit()
+    
+    def read_messages_from_db(self):
+        cursor = self.mydb.cursor()
+        sql = "SELECT author, content FROM messages"
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        for row in result:
+            author, content = row
+            print("Auteur:", author)
+            print("Contenu:", content)
+
     def run(self):
         self.SERVER.listen(100)
         print("Waiting for connection...")
@@ -78,8 +117,12 @@ class Server:
         ACCEPT_THREAD.join()
         self.SERVER.close()
 
+
 if __name__ == "__main__":
     HOST = '127.0.0.1'
     PORT = 33002
     server = Server(HOST, PORT)
     server.run()
+    
+    
+

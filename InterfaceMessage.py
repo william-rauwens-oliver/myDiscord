@@ -2,6 +2,7 @@ from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
 import sys
 
+
 class Client:
     def __init__(self, host, port, name):
         self.HOST = host
@@ -20,7 +21,7 @@ class Client:
                 msg = self.client_socket.recv(self.BUFSIZ).decode("utf8")
                 print(msg)
             except OSError: 
-                break
+                break 
 
     def send_message(self, msg):
         self.client_socket.send(bytes(msg, "utf8"))
@@ -39,4 +40,4 @@ if __name__ == "__main__":
     name = input("Enter your name: ") 
     client = Client(HOST, PORT, name)
     client.start()
-
+    
