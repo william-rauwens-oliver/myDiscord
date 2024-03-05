@@ -65,8 +65,12 @@ class Login(UIComponent):
 
     @staticmethod
     def get_logged_in_user_email():
-        # Code pour récupérer l'e-mail de l'utilisateur connecté
-        return "exemple@example.com"  # Exemple de retour d'une adresse e-mail
+        # Code pour récupérer l'e-mail de l'utilisateur connecté depuis la base de données
+        # Supposons que vous avez une méthode dans la classe Database pour récupérer l'e-mail de l'utilisateur connecté
+        # Utilisez cette méthode pour obtenir l'e-mail de l'utilisateur
+        db = Database()
+        logged_in_user_email = db.get_logged_in_user_email()  # Remplacez cette ligne par le code réel pour obtenir l'e-mail de l'utilisateur
+        return logged_in_user_email
 
     def main(self):
         clock = pygame.time.Clock()
@@ -109,7 +113,7 @@ class Login(UIComponent):
                             logged_in = True
                             error_message = ""
                             print("Connexion réussie!")
-                            subprocess.run(["python", "Messages.py"])  # Lancer Messages.py après la connexion réussie
+                            subprocess.run(["python", "Menu.py"])  # Charger Menu.py après la connexion réussie
                         else:
                             error_message = "Email ou mot de passe incorrect."
             else:
@@ -120,6 +124,7 @@ class Login(UIComponent):
                     if self.WIDTH / 2 - 60 < mouse_pos[0] < self.WIDTH / 2 + 60 and self.HEIGHT / 2 + 80 < mouse_pos[1] < self.HEIGHT / 2 + 120:
                         self.logout_screen.main()
                         logged_in = False
+                        subprocess.run(["python", "Messages.py"])  # Charger Messages.py après la déconnexion
             self.draw_text(error_message, 400, 500)
 
             if pygame.display.get_init():
