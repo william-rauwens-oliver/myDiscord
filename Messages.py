@@ -4,6 +4,7 @@ import pygame_gui
 import time
 import sounddevice as sd
 from scipy.io.wavfile import write
+import os  # Import du module os pour manipuler les chemins de fichiers
 
 pygame.init()
 
@@ -84,6 +85,7 @@ message_zone_texte = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Re
 
 # Définir l'état du clic de souris
 clic_gauche_enfonce = False
+enregistrement_en_cours = False
 
 def gerer_actions_boutons(utilisateur_nom):
     global utilisateur_selectionne
@@ -97,28 +99,37 @@ def afficher_image_bouton_vocal(rect):
     fenetre.blit(image_bouton_vocal, rect.topleft)
 
 def gerer_message_vocal():
-    pygame.mixer.init()  # Initialiser le module mixer de pygame
-    pygame.mixer.set_num_channels(1)  # Définir le nombre de canaux audio à utiliser
+    global enregistrement_en_cours
+    if not enregistrement_en_cours:
+        enregistrement_en_cours = True
+        pygame.mixer.init()  
+        pygame.mixer.set_num_channels(1)  
 
-    # Définir le nom du fichier pour l'enregistrement vocal
-    global nom_fichier_vocal
-    nom_fichier_vocal = "message_vocal.wav"
+        global nom_fichier_vocal
+        timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")  # Ajout du timestamp dans le nom du fichier
+        nom_fichier_vocal = f"message_vocal_{timestamp}.wav"  
 
-    # Enregistrement du message vocal avec la bibliothèque sounddevice
-    fs = 44100  # Fréquence d'échantillonnage (en Hz)
-    duree_enregistrement = 5  # Durée d'enregistrement en secondes
+        fs = 44100  
+        duree_enregistrement = 5  
 
-    print("Enregistrement du message vocal... Parlez maintenant !")
-    enregistrement = sd.rec(int(duree_enregistrement * fs), samplerate=fs, channels=2)
-    sd.wait()  # Attendre la fin de l'enregistrement
-    print("Enregistrement terminé.")
+        print("Enregistrement du message vocal... Parlez maintenant !")
+        enregistrement = sd.rec(int(duree_enregistrement * fs), samplerate=fs, channels=2)
 
-    # Sauvegarde du message vocal dans un fichier .wav
-    write(nom_fichier_vocal, fs, enregistrement)
-    print(f"Message vocal enregistré sous : {nom_fichier_vocal}")
+        while True:
+            # Vérifie si le clic gauche est toujours enfoncé
+            if not clic_gauche_enfonce:
+                break
 
-    # Vous pouvez maintenant insérer le code pour enregistrer le fichier .wav et les informations dans la base de données SQL
-    # par exemple, en utilisant la bibliothèque sqlite3 pour une base de données SQLite
+            # Si le clic gauche est toujours enfoncé, continue l'enregistrement
+            sd.wait()  
+            print("Enregistrement terminé.")
+
+            # Modification du chemin de sauvegarde pour inclure le dossier "MessagesVocaux"
+            chemin_complet = os.path.join("MessagesVocaux", nom_fichier_vocal)
+            write(chemin_complet, fs, enregistrement)  
+            print(f"Message vocal enregistré sous : {chemin_complet}")
+            enregistrement_en_cours = False
+            break
 
 running = True
 while running:
