@@ -17,7 +17,7 @@ class Server:
         self.db_config = {
             'host': 'localhost',
             'user': 'root',
-            'password': 'root',
+            'password': 'willy',
             'database': 'myDiscord'
         }
         self.mydb = mysql.connector.connect(**self.db_config)
