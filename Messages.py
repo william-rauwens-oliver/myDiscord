@@ -4,7 +4,7 @@ import pygame_gui
 import time
 import sounddevice as sd
 from scipy.io.wavfile import write
-import os  # Import du module os pour manipuler les chemins de fichiers
+import os
 
 pygame.init()
 
@@ -78,7 +78,7 @@ for i, chaine in enumerate(chaines_supplementaires):
     bouton_chaine = pygame_gui.elements.UIButton(relative_rect=bouton_chaine_rect, text=chaine, manager=manager)
     boutons.append((bouton_chaine, chaine))
 
-bouton_message_vocal_rect = pygame.Rect((1120, 687), (50, 50))
+bouton_message_vocal_rect = pygame.Rect((1120, 687), (56, 56))  # Modifier la taille du rectangle pour correspondre à la taille de l'image
 
 message_zone_texte = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((200, 700), (900, 50)),
                                                          manager=manager)
@@ -165,8 +165,9 @@ while running:
         # Détection du clic de souris
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Bouton gauche de la souris
-                clic_gauche_enfonce = True
-                gerer_message_vocal()  # Démarrez l'enregistrement du message vocal
+                if bouton_message_vocal_rect.collidepoint(event.pos):  # Vérifie si les coordonnées du clic sont dans le rectangle du bouton vocal
+                    clic_gauche_enfonce = True
+                    gerer_message_vocal()  # Démarrez l'enregistrement du message vocal
 
         # Détection du relâchement du clic de souris
         elif event.type == pygame.MOUSEBUTTONUP:
