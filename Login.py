@@ -63,14 +63,14 @@ class Login(UIComponent):
         query = "SELECT * FROM users WHERE email = %s AND password = %s"
         return self.db.check_login(email, password)
 
-    @staticmethod
-    def get_logged_in_user_email():
-        # Code pour récupérer l'e-mail de l'utilisateur connecté depuis la base de données
-        # Supposons que vous avez une méthode dans la classe Database pour récupérer l'e-mail de l'utilisateur connecté
-        # Utilisez cette méthode pour obtenir l'e-mail de l'utilisateur
-        db = Database()
-        logged_in_user_email = db.get_logged_in_user_email()  # Remplacez cette ligne par le code réel pour obtenir l'e-mail de l'utilisateur
-        return logged_in_user_email
+    def get_logged_in_user_email(self):
+        query = "SELECT email FROM users LIMIT 1"
+        self.db.cursor.execute(query)
+        result = self.db.cursor.fetchone()
+        if result:
+            return result[0]
+        else:
+            return None
 
     def main(self):
         clock = pygame.time.Clock()
@@ -113,7 +113,7 @@ class Login(UIComponent):
                             logged_in = True
                             error_message = ""
                             print("Connexion réussie!")
-                            subprocess.run(["python", "Menu.py"])  # Charger Menu.py après la connexion réussie
+                            subprocess.run(["python", "Menu.py"])
                         else:
                             error_message = "Email ou mot de passe incorrect."
             else:
@@ -124,7 +124,6 @@ class Login(UIComponent):
                     if self.WIDTH / 2 - 60 < mouse_pos[0] < self.WIDTH / 2 + 60 and self.HEIGHT / 2 + 80 < mouse_pos[1] < self.HEIGHT / 2 + 120:
                         self.logout_screen.main()
                         logged_in = False
-                        subprocess.run(["python", "Messages.py"])  # Charger Messages.py après la déconnexion
             self.draw_text(error_message, 400, 500)
 
             if pygame.display.get_init():

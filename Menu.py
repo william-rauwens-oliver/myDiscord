@@ -2,6 +2,7 @@ import pygame
 import os
 import cv2
 import pygame_gui
+import subprocess
 
 pygame.init()
 
@@ -63,3 +64,5 @@ while en_cours:
 cap.release()
 cv2.destroyAllWindows()
 pygame.quit()
+
+subprocess.run(["python", "Messages.py"])
