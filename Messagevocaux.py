@@ -1,15 +1,16 @@
 import mysql.connector
-import sounddevice as sd
-import numpy as np
+import pygame
+import pyaudio
 import threading
+from pydub import AudioSegment
 import os
 import datetime
-from pydub import AudioSegment
-from pydub.playback import play
 from Login import Login
 
 class EnregistreurVocal:
     def __init__(self):
+        pygame.init()
+
         self.mydb = mysql.connector.connect(
             host="localhost",
             user="root",
@@ -17,68 +18,107 @@ class EnregistreurVocal:
             database="discord"
         )
 
+        self.largeur, self.hauteur = 400, 300
+        self.fenetre = pygame.display.set_mode((self.largeur, self.hauteur))
+        pygame.display.set_caption("Enregistrement et Ecoute")
+
+        self.BLANC = (255, 255, 255)
+        self.NOIR = (0, 0, 0)
+        self.police = pygame.font.SysFont('Arial', 24)
         self.enregistrement_en_cours = False
         self.chemin_actuel = os.path.dirname(os.path.abspath(__file__))
-        self.audio_data = []
+        self.dossier_messages_vocaux = os.path.join(self.chemin_actuel)
 
     def enregistrer_message_vocal(self, user_id, username, chemin_audio):
         try:
             cursor = self.mydb.cursor()
             insert_query = "INSERT INTO messagesvoice (user_id, username, audio_file, send_time) VALUES (%s, %s, %s, %s)"
-            self.audio_data.export(chemin_audio, format="mp3")
-            send_time = datetime.datetime.now()
-            cursor.execute(insert_query, (user_id, username, chemin_audio, send_time))
+            with open(chemin_audio, 'rb') as f:
+                audio_data = f.read()
+                send_time = datetime.datetime.now()
+                cursor.execute(insert_query, (user_id, username, audio_data, send_time))
             self.mydb.commit()
             cursor.close()
             print("Message vocal enregistré avec succès !")
         except mysql.connector.Error as err:
             print(f"Erreur lors de l'insertion dans la base de données : {err}")
 
-    def start_recording(self):
-        def callback(indata, frames, time, status):
-            if status:
-                print(status)
-            self.audio_data.extend(indata.copy())
+    def enregistrer_audio(self):
+        CHUNK = 1024
+        FORMAT = pyaudio.paInt16
+        CHANNELS = 2
+        RATE = 44100
 
-        with sd.InputStream(callback=callback):
-            print("Enregistrement vocal en cours...")
-            input("Appuyez sur Entrée pour arrêter l'enregistrement...")
+        audio = pyaudio.PyAudio()
+
+        stream = audio.open(format=FORMAT, channels=CHANNELS,
+                            rate=RATE, input=True,
+                            frames_per_buffer=CHUNK)
+
+        frames = []
+
+        print("Enregistrement vocal en cours...")
+
+        while self.enregistrement_en_cours:
+            try:
+                data = stream.read(CHUNK)
+                frames.append(data)
+            except KeyboardInterrupt:
+                self.enregistrement_en_cours = False
+
         print("Enregistrement terminé.")
+
+        stream.stop_stream()
+        stream.close()
+        audio.terminate()
+
+        audio_data = b''.join(frames)
+        audio_segment = AudioSegment(data=audio_data, sample_width=2, frame_rate=RATE, channels=CHANNELS)
+        return audio_segment
 
     def toggle_enregistrement(self):
         self.enregistrement_en_cours = not self.enregistrement_en_cours
         if self.enregistrement_en_cours:
-            t = threading.Thread(target=self.start_recording)
-            t.start()
-        else:
-            t = threading.Thread(target=self.stop_recording)
+            t = threading.Thread(target=self.demarrer_enregistrement)
             t.start()
 
-    def stop_recording(self):
-        print("Arrêt de l'enregistrement...")
-        self.audio_data = np.array(self.audio_data)
-        self.audio_data = AudioSegment(self.audio_data.tobytes(), frame_rate=44100, sample_width=2, channels=2)
-        dossier_messages_vocaux = os.path.join(self.chemin_actuel, "MessagesVocaux")
-        if not os.path.exists(dossier_messages_vocaux):
-            os.makedirs(dossier_messages_vocaux)
-        nom_fichier = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".mp3"
-        chemin_audio = os.path.join(dossier_messages_vocaux, nom_fichier)
-        login = Login()
-        if login.logged_in:
-            user_id = login.user_id 
-            username = login.username
-            self.enregistrer_message_vocal(user_id, username, chemin_audio)
-        else:
-            print("Aucun utilisateur connecté. Impossible d'enregistrer le message vocal.")
+    def demarrer_enregistrement(self):
+        audio_segment = self.enregistrer_audio()
+        if not os.path.exists(self.dossier_messages_vocaux):
+            os.makedirs(self.dossier_messages_vocaux)
+        nom_fichier = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".wav"
+        chemin_audio = os.path.join(self.dossier_messages_vocaux, nom_fichier)
+        print("Chemin du fichier audio :", chemin_audio) # Afficher le chemin du fichier audio
+        if self.enregistrement_en_cours:
+            login = Login()
+            if login.logged_in:
+                user_id = login.user_id 
+                username = login.username
+                self.enregistrer_message_vocal(user_id, username, chemin_audio)
+            else:
+                print("Aucun utilisateur connecté. Impossible d'enregistrer le message vocal.")
 
     def executer(self):
-        print("Enregistreur vocal démarré. Maintenez le clic gauche pour enregistrer, relâchez pour terminer.")
-        while True:
-            user_input = input("Appuyez sur 'q' pour quitter: ")
-            if user_input.lower() == 'q':
-                break
-            else:
-                self.toggle_enregistrement()
+        running = True
+        while running:
+            self.fenetre.fill(self.BLANC)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        self.toggle_enregistrement()
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1:
+                        self.toggle_enregistrement()
+
+            texte = self.police.render("Cliquez et maintenez pour enregistrer un message vocal", True, self.NOIR)
+            self.fenetre.blit(texte, (20, 20))
+
+            pygame.display.flip()
+
+        pygame.quit()
 
 if __name__ == "__main__":
     enregistreur = EnregistreurVocal()
