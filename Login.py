@@ -1,7 +1,7 @@
 import pygame
 import subprocess
-from DataBase import Database
 from LogOut import Logout
+from ServeurGlobal import Server
 
 class UIComponent:
     def __init__(self):
@@ -56,11 +56,10 @@ class UIComponent:
 class Login(UIComponent):
     def __init__(self):
         super().__init__()
-        self.db = Database()
+        self.db = Server()
         self.logout_screen = Logout()
 
     def check_login(self, email, password):
-        query = "SELECT * FROM users WHERE email = %s AND password = %s"
         return self.db.check_login(email, password)
 
     def get_logged_in_user_email(self):

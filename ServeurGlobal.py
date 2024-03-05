@@ -4,7 +4,7 @@ import mysql.connector
 import time
 
 class Server:
-    def __init__(self, host, port):
+    def __init__(self, host='localhost', port=33002):
         self.HOST = host
         self.PORT = port
         self.BUFSIZ = 1024
@@ -20,7 +20,7 @@ class Server:
             'database': 'myDiscord'
         }
         self.mydb = mysql.connector.connect(**self.db_config)
-        self.messages = []  
+        self.messages = []
 
     def accept_incoming_connections(self):
         while True:
@@ -40,13 +40,13 @@ class Server:
         welcome_msg = "Welcome, %s! If you ever want to quit, type {quit} to exit." % name
         client.send(bytes(welcome_msg, "utf8"))
 
-        tchat=True
+        tchat = True
         while tchat:
             msg = client.recv(self.BUFSIZ)
             if msg.strip() != bytes("{quit}", "utf8"):
                 if name in self.clients.values():
                     self.broadcast(msg, name+": ")
-                self.messages.append((name, msg.decode("utf8"))) 
+                self.messages.append((name, msg.decode("utf8")))
                 print("Message received from %s: %s" % (name, msg.decode("utf8")))
                 print("Received message:", msg.decode("utf8"))
                 if msg:
@@ -57,7 +57,7 @@ class Server:
                 del self.clients[client]
                 self.broadcast(bytes("%s has left the chat." % name, "utf8"))
                 print("Client disconnected.")
-                tchat=False
+                tchat = False
 
     def broadcast(self, msg, prefix=""):
         for sock in self.clients:
@@ -71,29 +71,21 @@ class Server:
             cursor.execute(sql, (author, content, timestamp))
             self.mydb.commit()
 
-    def delete_messages_from_db(self):
+    def check_login(self, email, password):
         cursor = self.mydb.cursor()
-        for author, content in self.messages:
-            sql = "DELETE FROM messages WHERE author = %s AND content = %s"
-            cursor.execute(sql, (author, content))
-            self.mydb.commit()
-    
-    def update_messages_in_db(self):
+        query = "SELECT * FROM users WHERE email = %s AND password = %s"
+        cursor.execute(query, (email, password))
+        result = cursor.fetchone()
+        if result:
+            return True
+        else:
+            return False
+
+    def insert_user(self, name, first_name, email, password):
         cursor = self.mydb.cursor()
-        for author, content, new_content in self.messages:
-            sql = "UPDATE messages SET content = %s WHERE author = %s AND content = %s"
-            cursor.execute(sql, (new_content, author, content))
-            self.mydb.commit()
-    
-    def read_messages_from_db(self):
-        cursor = self.mydb.cursor()
-        sql = "SELECT author, content FROM messages"
-        cursor.execute(sql)
-        result = cursor.fetchall()
-        for row in result:
-            author, content = row
-            print("Auteur:", author)
-            print("Contenu:", content)
+        query = "INSERT INTO users (name, first_name, email, password) VALUES (%s, %s, %s, %s)"
+        cursor.execute(query, (name, first_name, email, password))
+        self.mydb.commit()
 
     def run(self):
         self.SERVER.listen(100)
@@ -105,7 +97,5 @@ class Server:
 
 
 if __name__ == "__main__":
-    HOST = '127.0.0.1'
-    PORT = 33002
-    server = Server(HOST, PORT)
+    server = Server()
     server.run()

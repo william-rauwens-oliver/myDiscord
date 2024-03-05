@@ -78,8 +78,7 @@ for i, chaine in enumerate(chaines_supplementaires):
     bouton_chaine = pygame_gui.elements.UIButton(relative_rect=bouton_chaine_rect, text=chaine, manager=manager)
     boutons.append((bouton_chaine, chaine))
 
-bouton_message_vocal_rect = pygame.Rect((1120, 687), (56, 56))  # Modifier la taille du rectangle pour correspondre à la taille de l'image
-
+bouton_message_vocal_rect = pygame.Rect((1120, 687), (56, 56))
 message_zone_texte = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((200, 700), (900, 50)),
                                                          manager=manager)
 
@@ -106,7 +105,7 @@ def gerer_message_vocal():
         pygame.mixer.set_num_channels(1)  
 
         global nom_fichier_vocal
-        timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")  # Ajout du timestamp dans le nom du fichier
+        timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
         nom_fichier_vocal = f"message_vocal_{timestamp}.wav"  
 
         fs = 44100  
@@ -116,15 +115,11 @@ def gerer_message_vocal():
         enregistrement = sd.rec(int(duree_enregistrement * fs), samplerate=fs, channels=2)
 
         while True:
-            # Vérifie si le clic gauche est toujours enfoncé
             if not clic_gauche_enfonce:
                 break
 
-            # Si le clic gauche est toujours enfoncé, continue l'enregistrement
             sd.wait()  
             print("Enregistrement terminé.")
-
-            # Modification du chemin de sauvegarde pour inclure le dossier "MessagesVocaux"
             chemin_complet = os.path.join("MessagesVocaux", nom_fichier_vocal)
             write(chemin_complet, fs, enregistrement)  
             print(f"Message vocal enregistré sous : {chemin_complet}")
@@ -171,12 +166,11 @@ while running:
                         messages.append((utilisateur_selectionne, texte, utilisateur_selectionne.couleur_message))
                         message_zone_texte.set_text('')
 
-        # Détection du clic de souris
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:  # Bouton gauche de la souris
-                if bouton_message_vocal_rect.collidepoint(event.pos):  # Vérifie si les coordonnées du clic sont dans le rectangle du bouton vocal
+            if event.button == 1:
+                if bouton_message_vocal_rect.collidepoint(event.pos): 
                     clic_gauche_enfonce = True
-                    gerer_message_vocal()  # Démarrez l'enregistrement du message vocal
+                    gerer_message_vocal()
 
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:

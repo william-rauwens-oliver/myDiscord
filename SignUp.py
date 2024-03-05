@@ -1,12 +1,12 @@
 import pygame
 import os
 import re
-from DataBase import Database
+from ServeurGlobal import Server
 from LogOut import Logout
 
 class BaseApplication:
     def __init__(self):
-        self.db = Database()
+        self.db = Server()
         pygame.init()
         self.BACKGROUND_COLOR = (54, 57, 63)
         self.TEXT_COLOR = (255, 255, 255)
