@@ -63,6 +63,11 @@ class Login(UIComponent):
         query = "SELECT * FROM users WHERE email = %s AND password = %s"
         return self.db.check_login(email, password)
 
+    @staticmethod
+    def get_logged_in_user_email():
+        # Code pour récupérer l'e-mail de l'utilisateur connecté
+        return "exemple@example.com"  # Exemple de retour d'une adresse e-mail
+
     def main(self):
         clock = pygame.time.Clock()
 

@@ -6,20 +6,29 @@ import sounddevice as sd
 from scipy.io.wavfile import write
 import os
 
+# Importer la classe de connexion et la méthode de déconnexion
+from Login import Login
+from LogOut import Logout
+
 pygame.init()
 
+# Déclarer les dimensions de la fenêtre
 largeur_fenetre = 1283
 hauteur_fenetre = 762
 fenetre = pygame.display.set_mode((largeur_fenetre, hauteur_fenetre))
 
+# Charger la vidéo d'arrière-plan
 fond_ecran = cv2.VideoCapture('Data/img-son23/pop.mp4')
 vitesse_decalage = 3
 
+# Créer le gestionnaire d'interface utilisateur
 manager = pygame_gui.UIManager((largeur_fenetre, hauteur_fenetre))
 
+# Charger l'image du bouton vocal et le redimensionner
 image_bouton_vocal = pygame.image.load("Data/img-son23/micro1.png")
 image_bouton_vocal = pygame.transform.scale(image_bouton_vocal, (56, 56))
 
+# Définir les utilisateurs avec leurs couleurs de message
 class Utilisateur:
     def __init__(self, nom, couleur_message):
         self.nom = nom
@@ -32,12 +41,13 @@ utilisateurs = [Utilisateur('Kenny', COULEUR_MESSAGE_LOCAL),
                 Utilisateur('Willy', COULEUR_MESSAGE_DISTANT),
                 Utilisateur('Max', (255, 0, 0))]
 
-messages = []
+messages = []  # Liste des messages
 
-police = pygame.font.Font(None, 24)
+police = pygame.font.Font(None, 24)  # Police de caractères pour les messages
 
-utilisateur_selectionne = None
+utilisateur_selectionne = None  # Utilisateur sélectionné
 
+# Fonction pour afficher les messages à l'écran
 def afficher_messages():
     largeur_rectangle = 600
     hauteur_rectangle = 400
@@ -65,7 +75,7 @@ espacement_bouton = 10
 decalage_x = 80
 decalage_y = 20
 
-boutons = []
+boutons = []  # Liste des boutons
 for i, utilisateur in enumerate(utilisateurs):
     bouton_rect = pygame.Rect(decalage_x, decalage_y + i * (2 * rayon_bouton + espacement_bouton), 2 * rayon_bouton, 2 * rayon_bouton)
     bouton = pygame_gui.elements.UIButton(relative_rect=bouton_rect, text=utilisateur.nom, manager=manager)
@@ -78,7 +88,7 @@ for i, chaine in enumerate(chaines_supplementaires):
     bouton_chaine = pygame_gui.elements.UIButton(relative_rect=bouton_chaine_rect, text=chaine, manager=manager)
     boutons.append((bouton_chaine, chaine))
 
-bouton_message_vocal_rect = pygame.Rect((1120, 687), (56, 56))  # Modifier la taille du rectangle pour correspondre à la taille de l'image
+bouton_message_vocal_rect = pygame.Rect((1120, 687), (56, 56))  # Rectangle du bouton vocal
 
 message_zone_texte = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((200, 700), (900, 50)),
                                                          manager=manager)
@@ -128,7 +138,16 @@ def gerer_message_vocal():
             chemin_complet = os.path.join("MessagesVocaux", nom_fichier_vocal)
             write(chemin_complet, fs, enregistrement)  
             print(f"Message vocal enregistré sous : {chemin_complet}")
+
+            if utilisateur_selectionne:
+                messages.append((utilisateur_selectionne, nom_fichier_vocal, utilisateur_selectionne.couleur_message))  # Ajoutez le message vocal à la liste des messages
+
             enregistrement_en_cours = False
+            
+            # Lire le fichier audio
+            pygame.mixer.music.load(chemin_complet)
+            pygame.mixer.music.play()
+            
             break
 
 running = True
@@ -183,6 +202,11 @@ while running:
     manager.draw_ui(fenetre)
 
     afficher_image_bouton_vocal(bouton_message_vocal_rect)
+
+    # Afficher l'adresse e-mail de l'utilisateur connecté en bas à gauche
+    logged_in_email = Login.get_logged_in_user_email()  # Supposons que la méthode pour obtenir l'e-mail de l'utilisateur connecté est définie dans la classe Login
+    email_surface = police.render(logged_in_email, True, (255, 255, 255))
+    fenetre.blit(email_surface, (10, hauteur_fenetre - 30))  # Afficher l'adresse e-mail en bas à gauche
 
     pygame.display.flip()
 
