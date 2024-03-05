@@ -41,41 +41,49 @@ class Server:
         welcome_msg = "Welcome, %s! If you ever want to quit, type {quit} to exit." % name
         client.send(bytes(welcome_msg, "utf8"))
 
-        while True:
+        tchat=True
+        while tchat:
             msg = client.recv(self.BUFSIZ)
-            if msg.strip() == bytes("{quit}", "utf8"):
-                client.send(bytes("{quit}", "utf8"))
-                client.close()
-                del self.clients[client]
-                self.broadcast(bytes("%s has left the chat." % name, "utf8"))
-                print("Client disconnected.")
-                break
-            else:
+            if msg.strip() != bytes("{quit}", "utf8"):
                 if name in self.clients.values():
                     self.broadcast(msg, name+": ")
                 self.messages.append((name, msg.decode("utf8"))) 
                 print("Message received from %s: %s" % (name, msg.decode("utf8")))
                 print("Received message:", msg.decode("utf8"))
-                self.create_messages_into_db()
-                break
-               
+                if msg:
+                    self.insert_messages_into_db()
+            else:
+                client.send(bytes("{quit}", "utf8"))
+                client.close()
+                del self.clients[client]
+                self.broadcast(bytes("%s has left the chat." % name, "utf8"))
+                print("Client disconnected.")
+                tchat=False
+          
+
+            
+                
+        
+                
+        
+        
+            
+
+        
+
 
     def broadcast(self, msg, prefix=""):
         for sock in self.clients:
             sock.send(bytes(prefix, "utf8") + msg)
 
-    def create_messages_into_db(self):
+    def insert_messages_into_db(self):
         cursor = self.mydb.cursor()
         for author, content in self.messages:
             timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
             sql = "INSERT INTO messages (author, content, timestamp) VALUES (%s, %s, %s)"
             cursor.execute(sql, (author, content, timestamp))
             self.mydb.commit()
-            self.messages = []
-            print("Message inserted into database:", author, content, timestamp)  
-           
-
-
+            
 
     def delete_messages_from_db(self):
         cursor = self.mydb.cursor()
@@ -115,3 +123,4 @@ if __name__ == "__main__":
     PORT = 33002
     server = Server(HOST, PORT)
     server.run()
+
