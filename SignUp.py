@@ -2,6 +2,7 @@ import pygame
 import os
 import re
 from ServeurGlobal import Server
+import subprocess
 from LogOut import Logout
 
 class BaseApplication:
@@ -124,7 +125,8 @@ class SignUp(BaseApplication):
                             if self.is_valid_email(email_input):
                                 self.db.insert_user(name_input, first_name_input, email_input, password_input)
                                 logged_in = True
-                                os.system("python MainMessages.py")
+                                # Lancer le script "Messages.py" ici
+                                subprocess.run(["python", "Messages.py"])
                             else:
                                 error_message = "Veuillez entrer une adresse e-mail valide avec les domaines suivants : gmail.com, outlook.com, yahoo.com" 
                         else:

@@ -1,7 +1,6 @@
-from socket import AF_INET, socket, SOCK_STREAM
+import socket
 from threading import Thread
 import sys
-
 
 class Client:
     def __init__(self, host, port, name):
@@ -10,8 +9,7 @@ class Client:
         self.name = name
         self.BUFSIZ = 1024
         self.ADDR = (self.HOST, self.PORT)
-        self.client_socket = socket(AF_INET, SOCK_STREAM)
-        self.client_socket.connect(self.ADDR)
+        self.client_socket = socket.create_connection(self.ADDR)
         self.receive_thread = Thread(target=self.receive_messages)
         self.receive_thread.start()
 
@@ -24,7 +22,7 @@ class Client:
                 break 
 
     def send_message(self, msg):
-        self.client_socket.send(bytes(msg, "utf8"))
+        self.client_socket.sendall(bytes(msg, "utf8"))
 
     def start(self):
         while True:
@@ -35,9 +33,8 @@ class Client:
             self.send_message(msg)
 
 if __name__ == "__main__":
-    HOST = '127.0.0.1'
-    PORT = 33002
+    HOST = socket.gethostbyname(socket.gethostname())
+    PORT = 2869
     name = input("Enter your name: ") 
     client = Client(HOST, PORT, name)
     client.start()
-    

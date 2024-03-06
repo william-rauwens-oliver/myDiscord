@@ -44,13 +44,14 @@ class Server:
         while tchat:
             msg = client.recv(self.BUFSIZ)
             if msg.strip() != bytes("{quit}", "utf8"):
-                if name in self.clients.values():
-                    self.broadcast(msg, name+": ")
-                self.messages.append((name, msg.decode("utf8")))
-                print("Message received from %s: %s" % (name, msg.decode("utf8")))
-                print("Received message:", msg.decode("utf8"))
-                if msg:
-                    self.insert_messages_into_db()
+                author, message = msg.decode("utf8").split(":")
+                if author in self.clients.values():
+                    self.broadcast(msg, author + ": ")
+                self.messages.append((author, message))
+                print("Message received from %s: %s" % (author, message))
+                print("Received message:", message)
+                if message:
+                    self.insert_messages_into_db(author, message)
             else:
                 client.send(bytes("{quit}", "utf8"))
                 client.close()
@@ -63,12 +64,25 @@ class Server:
         for sock in self.clients:
             sock.send(bytes(prefix, "utf8") + msg)
 
-    def insert_messages_into_db(self):
+    def insert_messages_into_db(self, author, message):
+        cursor = self.mydb.cursor()
+        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+        sql = "INSERT INTO messages (author, content, timestamp) VALUES (%s, %s, %s)"
+        cursor.execute(sql, (author, message, timestamp))
+        self.mydb.commit()
+
+    def delete_messages_from_db(self):
         cursor = self.mydb.cursor()
         for author, content in self.messages:
-            timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-            sql = "INSERT INTO messages (author, content, timestamp) VALUES (%s, %s, %s)"
-            cursor.execute(sql, (author, content, timestamp))
+            sql = "DELETE FROM messages WHERE author = %s AND content = %s"
+            cursor.execute(sql, (author, content))
+            self.mydb.commit()
+    
+    def update_messages_in_db(self):
+        cursor = self.mydb.cursor()
+        for author, content, new_content in self.messages:
+            sql = "UPDATE messages SET content = %s WHERE author = %s AND content = %s"
+            cursor.execute(sql, (new_content, author, content))
             self.mydb.commit()
 
     def check_login(self, email, password):

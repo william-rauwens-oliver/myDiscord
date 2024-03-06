@@ -5,6 +5,8 @@ import time
 import sounddevice as sd
 from scipy.io.wavfile import write
 import os
+from socket import AF_INET, socket, SOCK_STREAM
+from ServeurGlobal import Server
 
 pygame.init()
 
@@ -133,6 +135,9 @@ def gerer_message_vocal():
             pygame.mixer.music.load(chemin_complet)
             pygame.mixer.music.play()
             
+            # Insérer le message dans la base de données
+            Server.insert_messages_into_db(utilisateur_selectionne.nom, nom_fichier_vocal)
+
             break
 
 running = True

@@ -1,68 +1,87 @@
 import pygame
-import os
 import cv2
 import pygame_gui
 import subprocess
 
-pygame.init()
+class VideoPlayerBase:
+    def __init__(self):
+        pygame.init()
 
-new_var = 1283, 762
-largeur_fenetre, hauteur_fenetre = new_var
-fenetre = pygame.display.set_mode((largeur_fenetre, hauteur_fenetre))
+        self.window_size = (1283, 762)
+        self.window = pygame.display.set_mode(self.window_size)
+        self.ui_manager = pygame_gui.UIManager(self.window_size)
 
-gestionnaire = pygame_gui.UIManager((largeur_fenetre, hauteur_fenetre))
+        self.video_path = "Data/img-son23/geek.mp4"
+        self.cap = cv2.VideoCapture(self.video_path)
 
-bouton_image = pygame.image.load("Data/img-son23/inscription.png")
-bouton_image = pygame.transform.scale(bouton_image, (80, 40))  
-bouton2_image = pygame.image.load("Data/img-son23/connect.png")
-bouton2_image = pygame.transform.scale(bouton2_image, (80, 40))  
+        self.video_width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.video_height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-video_path = "Data/img-son23/geek.mp4"
-cap = cv2.VideoCapture(video_path)
+        self.playing = True
+        self.play_video = True
+        self.video_finished = False
 
-largeur_video = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-hauteur_video = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        pygame.mixer.music.load("Data/img-son23/music.mp3")
+        pygame.mixer.music.set_volume(0.3)
+        pygame.mixer.music.play(1)
 
-en_cours = True
-lecture_video = True
-video_terminee = False
+    def process_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.playing = False
+            self.ui_manager.process_events(event)
 
-pygame.mixer.music.load("Data/img-son23/music.mp3")
-pygame.mixer.music.set_volume(3)
-pygame.mixer.music.play(1)
+    def update_ui(self, delta_time):
+        self.ui_manager.update(delta_time)
 
-while en_cours:
-    delta_temps = pygame.time.Clock().tick(60) / 1000.0
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            en_cours = False
-
-        gestionnaire.process_events(event)
-
-    gestionnaire.update(delta_temps)
-
-    if lecture_video and not video_terminee:
-        ret, frame = cap.read()
-        if not ret:
-            cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-            ret, frame = cap.read()
-
-            video_terminee = True
-
+    def display_frame(self, frame):
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = cv2.resize(frame, (largeur_fenetre, hauteur_fenetre))
-        frame_surface = pygame.image.frombuffer(frame.tobytes(), (largeur_fenetre, hauteur_fenetre), 'RGB')
-        fenetre.blit(frame_surface, (0, 0))
+        frame = cv2.resize(frame, self.window_size)
+        frame_surface = pygame.image.frombuffer(frame.tobytes(), self.window_size, 'RGB')
+        self.window.blit(frame_surface, (0, 0))
 
-    gestionnaire.update(delta_temps)
+    def release_resources(self):
+        self.cap.release()
+        cv2.destroyAllWindows()
+        pygame.quit()
 
-    pygame.display.update()
-    
-    if video_terminee:
-        en_cours = False
+    def play(self):
+        clock = pygame.time.Clock()
 
-cap.release()
-cv2.destroyAllWindows()
-pygame.quit()
+        while self.playing:
+            delta_time = clock.tick(60) / 1000.0
 
-subprocess.run(["python", "Messages.py"])
+            self.process_events()
+
+            self.update_ui(delta_time)
+
+            if self.play_video and not self.video_finished:
+                ret, frame = self.cap.read()
+                if not ret:
+                    self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                    ret, frame = self.cap.read()
+                    self.video_finished = True
+
+                self.display_frame(frame)
+
+            self.update_ui(delta_time)
+
+            pygame.display.update()
+
+            if self.video_finished:
+                self.playing = False
+
+        self.release_resources()
+
+class VideoPlayer(VideoPlayerBase):
+    def __init__(self):
+        super().__init__()
+
+    def run(self):
+        self.play()
+
+        subprocess.run(["python", "Messages.py"])
+
+if __name__ == "__main__":
+    player = VideoPlayer()
+    player.run()
